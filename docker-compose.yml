@@ -20,7 +20,7 @@ services:
     environment:
       - DB_USER=TEST
       - DB_PASSWORD=TEST
-      - HOST=host.docker.internal
+      - DB_HOST=host.docker.internal
     networks:
       - postgres
 

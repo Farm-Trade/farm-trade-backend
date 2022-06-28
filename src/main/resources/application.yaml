@@ -6,7 +6,7 @@ spring:
       ddl-auto: create
   datasource:
     platform: postgres
-    url: jdbc:postgresql://${HOST}:5432/postgres
-    username: ${DB_USER}
-    password: ${DB_PASSWORD}
+    url: jdbc:postgresql://${HOST:localhost}:${DB_PORT:5432}/postgres
+    username: ${DB_USER:TEST}
+    password: ${DB_PASSWORD:TEST}
     driverClassName: org.postgresql.Driver
