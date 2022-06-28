@@ -1,0 +1,29 @@
+services:
+  my-web-app-db:
+    image: postgres
+    ports:
+      - "5432:5432"
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=TEST
+      - POSTGRES_USER=TEST
+    networks:
+      - postgres
+
+  farm-trade:
+
+    build: .
+    ports:
+      - "8000:8080"
+    depends_on:
+      - my-web-app-db
+    environment:
+      - DB_USER=TEST
+      - DB_PASSWORD=TEST
+      - HOST=host.docker.internal
+    networks:
+      - postgres
+
+networks:
+  postgres:
+    driver: bridge
