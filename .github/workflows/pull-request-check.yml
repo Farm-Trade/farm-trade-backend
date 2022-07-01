@@ -1,5 +1,9 @@
 name: Pull Request Check
 
+env:
+  IMAGE_NAME: "farm-trade-backend"
+  IMAGE_REGISTRY: "ghcr.io"
+
 on:
   pull_request:
     branches:
@@ -27,12 +31,12 @@ jobs:
       - name: Build & push Docker image
         uses: mr-smithers-excellent/docker-build-push@v5
         with:
-          image: farm-trade-backend
+          image: ${{ env.IMAGE_NAME }}
           tags: ${{ github.sha }}
-          registry: ghcr.io
+          registry: ${{ env.IMAGE_REGISTRY }}
           dockerfile: Dockerfile
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_TOKEN }}
 
       - name: Image Report
-        run: echo Image name is ghcr.io/farm-trade/farm-trade-backend:${{ github.sha }}
+        run: echo Image name is ${{ env.IMAGE_REGISTRY }}/farm-trade/${{ env.IMAGE_NAME }}:${{ github.sha }}
