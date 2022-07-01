@@ -23,12 +23,14 @@ jobs:
 
       - name: Build with Maven
         run: mvn clean install
+      - name: TEST
+        run: echo ${GITHUB_REF_NAME}
 
       - name: Build & push Docker image
         uses: mr-smithers-excellent/docker-build-push@v5
         with:
           image: farm-trade-backend
-          tags: ${{ steps.extract_branch.outputs.branch }}
+          tags: ${ GITHUB_REF_NAME }
           registry: ghcr.io
           dockerfile: Dockerfile
           username: ${{ secrets.DOCKER_USERNAME }}
