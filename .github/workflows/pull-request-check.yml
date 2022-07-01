@@ -8,9 +8,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      IMAGE_NAME: "farm-trade-backend"
-      IMAGE_REGISTRY: "ghcr.io"
 
     steps:
       - uses: actions/checkout@v2
@@ -30,15 +27,12 @@ jobs:
       - name: Build & push Docker image
         uses: mr-smithers-excellent/docker-build-push@v5
         with:
-          image: ${{ env.IMAGE_NAME }}
+          image: farm-trade-backend
           tags: ${{ github.sha }}
-          registry: ${{ env.IMAGE_REGISTRY }}
+          registry: ghcr.io
           dockerfile: Dockerfile
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_TOKEN }}
 
-      - name: TEST
-        run: echo ${{ github.repository }}
-
       - name: Image Report
-        run: echo Image name is ${{ env.IMAGE_REGISTRY }}/farm-trade/${{ env.IMAGE_NAME }}:${{ github.sha }}
+        run: echo Image name is ghcr.io/farm-trade/farm-trade-backend:${{ github.sha }}
