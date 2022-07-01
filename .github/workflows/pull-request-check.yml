@@ -1,9 +1,5 @@
 name: Pull Request Check
 
-env:
-  IMAGE_NAME: "farm-trade-backend"
-  IMAGE_REGISTRY: "ghcr.io"
-
 on:
   pull_request:
     branches:
@@ -12,6 +8,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      IMAGE_NAME: "farm-trade-backend"
+      IMAGE_REGISTRY: "ghcr.io"
 
     steps:
       - uses: actions/checkout@v2
