@@ -22,7 +22,12 @@ jobs:
       - name: Build with Maven
         run: mvn clean install
 
+      - name: Build Docker image
+        if: ${{ github.event_name == 'pull_request' }}
+        run: docker build -f Dockerfile -t farm-trade-backend .
+
       - name: Build & push Docker image
+        if: ${{ github.event_name != 'pull_request' }}
         uses: mr-smithers-excellent/docker-build-push@v5
         with:
           image: farm-trade-backend
