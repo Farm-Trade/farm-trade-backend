@@ -36,7 +36,9 @@ jobs:
           dockerfile: Dockerfile
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_TOKEN }}
-        run: echo ${{ github.repository}}
+
+      - name: TEST
+        run: echo ${{ github.repository }}
 
       - name: Image Report
         run: echo Image name is ${{ env.IMAGE_REGISTRY }}/farm-trade/${{ env.IMAGE_NAME }}:${{ github.sha }}
