@@ -1,15 +1,14 @@
 name: Docker Build
 
 on:
-  pull_request:
-    branches:
-      - develop
   push:
-    branches:
-      - develop
+    branches: [ develop ]
+  pull_request:
+    branches: [ develop ]
 
 jobs:
   build:
+
     runs-on: ubuntu-latest
 
     steps:
@@ -20,16 +19,15 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
           cache: maven
-
-      - name: Build Maven
+      - name: Build with Maven
         run: mvn clean install
 
-      - name: Build and push Docker image
-        run: mr-smithers-excellent/docker-build-push@v5
+      - name: Build & push Docker image
+        uses: mr-smithers-excellent/docker-build-push@v5
         with:
           image: Farm-Trade/farm-trade-backend:latest
-          tag: latest
+          tags: latest
           registry: ghcr.io
           dockerfile: Dockerfile
           username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_TOKEN }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
