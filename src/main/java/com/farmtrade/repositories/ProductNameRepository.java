@@ -10,14 +10,14 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ProductNameRepository extends JpaRepository<ProductName, Long>, CrudRepository<ProductName, Long> {
-    // To gat page
-    Page<ProductName> findAll(Pageable pageable);
+    // To gat page filter by approved
+    Page<ProductName> findAllByApproved(boolean approved, Pageable pageable);
     // To get all
-    List<ProductName> findAll();
+    List<ProductName> findAllByApproved(boolean approved);
     // To get one
     Optional<ProductName> findById(Long id);
     // To update and create one
     ProductName save(ProductName entity);
     // To delete one
-    void deleteById(Long id);
+    void delete(ProductName entity);
 }

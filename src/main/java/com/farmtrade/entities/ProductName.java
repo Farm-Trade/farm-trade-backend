@@ -17,4 +17,6 @@ public class ProductName implements Serializable {
     private String name;
 
     private ProductType type;
+
+    private boolean approved;
 }
