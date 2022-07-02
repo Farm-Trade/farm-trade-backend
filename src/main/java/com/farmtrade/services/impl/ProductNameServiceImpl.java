@@ -1,10 +1,10 @@
 package com.farmtrade.services.impl;
 
+import com.farmtrade.dto.ApproveProductNameDto;
 import com.farmtrade.entities.ProductName;
 import com.farmtrade.exceptions.EntityNotFoundException;
 import com.farmtrade.repositories.ProductNameRepository;
 import com.farmtrade.services.interfaces.ProductNameService;
-import com.fasterxml.jackson.databind.util.BeanUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +18,11 @@ public class ProductNameServiceImpl implements ProductNameService {
 
     public ProductNameServiceImpl(ProductNameRepository productNameRepository) {
         this.productNameRepository = productNameRepository;
+    }
+
+    @Override
+    public List<ProductName> findAll() {
+        return productNameRepository.findAll();
     }
 
     @Override
@@ -56,10 +61,10 @@ public class ProductNameServiceImpl implements ProductNameService {
     }
 
     @Override
-    public boolean updateApproveById(Long id, boolean approve) {
+    public ApproveProductNameDto updateApproveById(Long id, ApproveProductNameDto approveProductName) {
         ProductName productName = findOne(id);
-        productName.setApproved(approve);
+        productName.setApproved(approveProductName.isApproved());
         productNameRepository.save(productName);
-        return approve;
+        return ApproveProductNameDto.builder().approved(approveProductName.isApproved()).build();
     }
 }

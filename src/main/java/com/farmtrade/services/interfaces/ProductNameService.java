@@ -1,5 +1,6 @@
 package com.farmtrade.services.interfaces;
 
+import com.farmtrade.dto.ApproveProductNameDto;
 import com.farmtrade.entities.ProductName;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -7,6 +8,8 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface ProductNameService {
+    List<ProductName> findAll();
+
     Page<ProductName> findPageByApproved(Pageable pageable, boolean approved);
 
     List<ProductName> findAllByApproved(boolean approved);
@@ -19,5 +22,5 @@ public interface ProductNameService {
 
     void deleteById(Long id);
 
-    boolean updateApproveById(Long id, boolean approve);
+    ApproveProductNameDto updateApproveById(Long id, ApproveProductNameDto approveProductName);
 }
