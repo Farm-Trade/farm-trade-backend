@@ -12,14 +12,13 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements UserService{
 
     final private UserRepository userRepository;
-
     public UserServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByUsername(username);
+         return userRepository.findByUsername(username);
     }
 
     @Override
