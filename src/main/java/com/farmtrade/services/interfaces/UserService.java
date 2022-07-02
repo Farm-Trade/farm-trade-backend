@@ -1,6 +1,6 @@
 package com.farmtrade.services.interfaces;
 
-import com.farmtrade.domains.User;
+import com.farmtrade.entities.User;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.userdetails.UserDetailsService;
 

@@ -1,7 +1,9 @@
 package com.farmtrade.controllers;
 
-import com.farmtrade.domains.User;
+import com.farmtrade.entities.User;
+import com.farmtrade.services.impl.UserServiceImpl;
 import com.farmtrade.services.interfaces.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

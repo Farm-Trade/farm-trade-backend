@@ -1,4 +1,4 @@
-package com.farmtrade.domains;
+package com.farmtrade.entities;
 
 import org.springframework.security.core.GrantedAuthority;
 

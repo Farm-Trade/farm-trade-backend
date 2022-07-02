@@ -1,15 +1,14 @@
 spring:
+  security:
+    basic:
+      enabled: false
   jpa:
     database: POSTGRESQL
     show-sql: true
     hibernate:
       ddl-auto: create
+
   datasource:
-    platform: postgres
-    session:
-      jdbc:
-        initialize-schema: always
-        table-name: SPRING_SESSION
     url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/postgres
     username: ${DB_USER:TEST}
     password: ${DB_PASSWORD:TEST}

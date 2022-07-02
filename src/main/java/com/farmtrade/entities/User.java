@@ -1,4 +1,4 @@
-package com.farmtrade.domains;
+package com.farmtrade.entities;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.core.GrantedAuthority;
@@ -17,10 +17,10 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private String full_name;
+    private String fullName;
 
     @CreationTimestamp
-    private Timestamp created_at;
+    private Timestamp createdAt;
     private String phone;
     private String email;
     private String password;
@@ -35,20 +35,24 @@ public class User implements UserDetails {
         this.id = id;
     }
 
-    public String getFull_name() {
-        return full_name;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public void setFull_name(String full_name) {
-        this.full_name = full_name;
+    public String getFullName() {
+        return fullName;
     }
 
-    public Timestamp getCreated_at() {
-        return created_at;
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
-    public void setCreated_at(Timestamp created_at) {
-        this.created_at = created_at;
+    public Timestamp getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Timestamp createdAt) {
+        this.createdAt = createdAt;
     }
 
     public String getPhone() {
@@ -93,6 +97,7 @@ public class User implements UserDetails {
     public String getUsername() {
         return null;
     }
+
 
     @Override
     public boolean isAccountNonExpired() {
