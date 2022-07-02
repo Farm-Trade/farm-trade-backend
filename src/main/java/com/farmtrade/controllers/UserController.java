@@ -2,24 +2,33 @@ package com.farmtrade.controllers;
 
 import com.farmtrade.entities.User;
 import com.farmtrade.services.impl.UserServiceImpl;
-import com.farmtrade.services.interfaces.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("users")
 public class UserController {
-    final private UserService userService;
+    final private UserServiceImpl userServiceImpl;
 
-    public UserController(UserService userService) {
-        this.userService = userService;
+    public UserController(UserServiceImpl userServiceImpl) {
+        this.userServiceImpl = userServiceImpl;
     }
+
 
     @GetMapping
     public Page<User> findAllUsers(){
+        return null;
+    }
+
+    @GetMapping("/currentUser")
+    public String getUserName(@RequestParam(required = false) String username){
+        return userServiceImpl.loadUserByUsername(username).getUsername();
+    }
+
+    //UPDATE
+    @GetMapping("/{id}/edit")
+    public HttpStatus editUser(@PathVariable("id") Long id){
         return null;
     }
 }
