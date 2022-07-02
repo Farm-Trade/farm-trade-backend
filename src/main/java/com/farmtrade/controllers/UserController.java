@@ -16,19 +16,32 @@ public class UserController {
     }
 
 
-    @GetMapping
+    @GetMapping("/all")
     public Page<User> findAllUsers(){
         return null;
     }
 
-    @GetMapping("/currentUser")
-    public String getUserName(@RequestParam(required = false) String username){
-        return userServiceImpl.loadUserByUsername(username).getUsername();
+    //CREATE
+    @PostMapping
+    public HttpStatus createUser(@RequestParam User user){
+        return userServiceImpl.createUser(user);
+
+    }
+
+    //READ
+    @GetMapping("{id}")
+    public User getUser(@PathVariable("id") Long id){
+        return userServiceImpl.getUser(id);
     }
 
     //UPDATE
-    @GetMapping("/{id}/edit")
-    public HttpStatus editUser(@PathVariable("id") Long id){
-        return null;
+    @PutMapping
+    public HttpStatus editUser(@RequestParam User user){
+        return userServiceImpl.updateUser(user);
+    }
+    //DELETE
+    @DeleteMapping
+    public HttpStatus deleteUser(Long id){
+        return userServiceImpl.deleteUser(id);
     }
 }
