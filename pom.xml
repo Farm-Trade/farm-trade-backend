@@ -13,9 +13,6 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>farmtrade</name>
 	<description>Trade Market App for Farms</description>
-	<properties>
-		<java.version>17</java.version>
-	</properties>
 	<dependencies>
 
 
@@ -74,6 +71,13 @@
 
 	</dependencies>
 
+	<distributionManagement>
+		<repository>
+			<id>github</id>
+			<name>GitHub Farm-Trade Apache Maven Packages</name>
+			<url>https://maven.pkg.github.com/Farm-Trade/farm-trade-backend</url>
+		</repository>
+	</distributionManagement>
 	<build>
 		<plugins>
 			<plugin>
@@ -89,6 +93,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		<finalName>farm-trade-${version}</finalName>
 	</build>
 
 </project>
