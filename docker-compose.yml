@@ -7,16 +7,18 @@ services:
     environment:
       - POSTGRES_PASSWORD=farmtrade
       - POSTGRES_USER=farmtrade
+      - POSTGRES_DB=farmtrade
     networks:
       - postgres
 
   farm-trade-backend:
     image: ghcr.io/farm-trade/farm-trade-backend
     ports:
-      - "8080:8080"
+      - "8000:8080"
     depends_on:
       - farm-trade-db
     environment:
+      - DB_NAME=farmtrade
       - DB_USER=farmtrade
       - DB_PASSWORD=farmtrade
       - DB_HOST=host.docker.internal
