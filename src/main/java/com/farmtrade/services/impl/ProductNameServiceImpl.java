@@ -27,6 +27,7 @@ public class ProductNameServiceImpl implements ProductNameService {
 
     @Override
     public Page<ProductName> findPageByApproved(Pageable pageable, boolean approved) {
+        Page<ProductName> s = productNameRepository.findAllByApproved(approved, pageable);
         return productNameRepository.findAllByApproved(approved, pageable);
     }
 
@@ -65,6 +66,6 @@ public class ProductNameServiceImpl implements ProductNameService {
         ProductName productName = findOne(id);
         productName.setApproved(approveProductName.isApproved());
         productNameRepository.save(productName);
-        return ApproveProductNameDto.builder().approved(approveProductName.isApproved()).build();
+        return ApproveProductNameDto.builder().approved(productName.isApproved()).build();
     }
 }

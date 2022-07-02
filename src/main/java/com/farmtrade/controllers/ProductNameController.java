@@ -23,7 +23,7 @@ public class ProductNameController {
     @GetMapping
     public Page<ProductName> findAll(
             @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable,
-            @RequestParam(required = false, defaultValue = "false") boolean approved
+            @RequestParam(required = false, defaultValue = "true") boolean approved
     ) {
         return productNameService.findPageByApproved(pageable, approved);
     }
