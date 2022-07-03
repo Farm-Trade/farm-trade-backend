@@ -1,4 +1,4 @@
-package com.farmtrade.entities;
+package com.farmtrade.entities.enums;
 
 import org.springframework.security.core.GrantedAuthority;
 
