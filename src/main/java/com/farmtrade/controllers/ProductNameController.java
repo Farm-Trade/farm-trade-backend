@@ -1,7 +1,10 @@
 package com.farmtrade.controllers;
 
 import com.farmtrade.dto.ApproveProductNameDto;
+import com.farmtrade.dto.ProductNameCreateUpdateDto;
 import com.farmtrade.entities.ProductName;
+import com.farmtrade.entities.enums.Role;
+import com.farmtrade.exceptions.ApiValidationException;
 import com.farmtrade.services.interfaces.ProductNameService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,10 +25,9 @@ public class ProductNameController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
     public Page<ProductName> findAll(
-            @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable,
-            @RequestParam(required = false, defaultValue = "true") boolean approved
+            @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        return productNameService.findPageByApproved(pageable, approved);
+        return productNameService.findPage(pageable);
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -36,14 +38,14 @@ public class ProductNameController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public ProductName create(@RequestBody ProductName productName) {
-        return productNameService.create(productName);
+    public ProductName create(@RequestBody ProductNameCreateUpdateDto productNameDto) {
+        return productNameService.create(productNameDto);
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @PutMapping("/{id}")
-    public ProductName update(@PathVariable Long id, @RequestBody ProductName productName) {
-        return productNameService.update(id, productName);
+    @PatchMapping("/{id}")
+    public ProductName update(@PathVariable Long id, @RequestBody ProductNameCreateUpdateDto productNameDto) {
+        return productNameService.update(id, productNameDto);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -56,5 +58,11 @@ public class ProductNameController {
     @PutMapping("/{id}/approve")
     public ApproveProductNameDto updateApprove(@PathVariable Long id, @RequestBody ApproveProductNameDto approveProductName) {
         return productNameService.updateApproveById(id, approveProductName);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @PutMapping("/{id}/updateRequestPermission/{role}")
+    public ProductName updateRequestPermission(@PathVariable Long id, @PathVariable Role role) throws ApiValidationException {
+        return productNameService.updateRequestPermission(id, role);
     }
 }

@@ -1,26 +1,26 @@
 package com.farmtrade.services.interfaces;
 
 import com.farmtrade.dto.ApproveProductNameDto;
+import com.farmtrade.dto.ProductNameCreateUpdateDto;
 import com.farmtrade.entities.ProductName;
+import com.farmtrade.entities.enums.Role;
+import com.farmtrade.exceptions.ApiValidationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.RequestBody;
 
 public interface ProductNameService {
-    List<ProductName> findAll();
-
-    Page<ProductName> findPageByApproved(Pageable pageable, boolean approved);
-
-    List<ProductName> findAllByApproved(boolean approved);
+    Page<ProductName> findPage(Pageable pageable);
 
     ProductName findOne(Long id);
 
-    ProductName update(Long id, ProductName productName);
+    ProductName update(Long id, @RequestBody ProductNameCreateUpdateDto productNameDto);
 
-    ProductName create(ProductName productName);
+    ProductName create(ProductNameCreateUpdateDto productNameDto);
 
     void deleteById(Long id);
 
     ApproveProductNameDto updateApproveById(Long id, ApproveProductNameDto approveProductName);
+
+    ProductName updateRequestPermission(Long id, Role role) throws ApiValidationException;
 }

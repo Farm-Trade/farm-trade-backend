@@ -1,7 +1,10 @@
 package com.farmtrade.services.impl;
 
 import com.farmtrade.dto.ApproveProductNameDto;
+import com.farmtrade.dto.ProductNameCreateUpdateDto;
 import com.farmtrade.entities.ProductName;
+import com.farmtrade.entities.enums.Role;
+import com.farmtrade.exceptions.ApiValidationException;
 import com.farmtrade.exceptions.EntityNotFoundException;
 import com.farmtrade.repositories.ProductNameRepository;
 import com.farmtrade.services.interfaces.ProductNameService;
@@ -9,8 +12,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @Service
 public class ProductNameServiceImpl implements ProductNameService {
@@ -21,19 +23,8 @@ public class ProductNameServiceImpl implements ProductNameService {
     }
 
     @Override
-    public List<ProductName> findAll() {
-        return productNameRepository.findAll();
-    }
-
-    @Override
-    public Page<ProductName> findPageByApproved(Pageable pageable, boolean approved) {
-        Page<ProductName> s = productNameRepository.findAllByApproved(approved, pageable);
-        return productNameRepository.findAllByApproved(approved, pageable);
-    }
-
-    @Override
-    public List<ProductName> findAllByApproved(boolean approved) {
-        return productNameRepository.findAllByApproved(approved);
+    public Page<ProductName> findPage(Pageable pageable) {
+        return productNameRepository.findAll(pageable);
     }
 
     @Override
@@ -43,15 +34,22 @@ public class ProductNameServiceImpl implements ProductNameService {
     }
 
     @Override
-    public ProductName update(Long id, ProductName productName) {
+    public ProductName update(Long id, @RequestBody ProductNameCreateUpdateDto productNameDto) {
         ProductName productNameFromDb = findOne(id);
-        BeanUtils.copyProperties(productName, productNameFromDb, "id", "approved");
+        BeanUtils.copyProperties(productNameDto, productNameFromDb);
+        // TODO After user system added if admit adding approve should be true
+        productNameFromDb.setApproved(false);
         return productNameRepository.save(productNameFromDb);
     }
 
     @Override
-    public ProductName create(ProductName productName) {
-        productName.setApproved(false);
+    public ProductName create(ProductNameCreateUpdateDto productNameDto) {
+        final ProductName productName = ProductName.builder()
+                .name(productNameDto.getName())
+                .type(productNameDto.getType())
+                .approved(false)
+                .createRequestPermission(Role.RESELLER)
+                .build();
         return productNameRepository.save(productName);
     }
 
@@ -68,4 +66,20 @@ public class ProductNameServiceImpl implements ProductNameService {
         productNameRepository.save(productName);
         return ApproveProductNameDto.builder().approved(productName.isApproved()).build();
     }
+
+    @Override
+    public ProductName updateRequestPermission(Long id, Role role) throws ApiValidationException {
+        ProductName productName = findOne(id);
+        if (!productName.isApproved()) {
+            throw new ApiValidationException("ProductName is not approved, createRequestPermission cannot be updated");
+        }
+
+        Role.isCommercialRole(role, true);
+        if (role.equals(productName.getCreateRequestPermission())) {
+            return productName;
+        }
+        productName.setCreateRequestPermission(role);
+        return productNameRepository.save(productName);
+    }
+
 }
