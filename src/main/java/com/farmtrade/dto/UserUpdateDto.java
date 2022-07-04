@@ -1,15 +1,16 @@
 package com.farmtrade.dto;
 
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 public class UserUpdateDto {
     public UserUpdateDto(String fullName, String phone, String email, String password) {
         this.fullName = fullName;
         this.phone = phone;
         this.email = email;
-        this.password = password;
     }
-    public UserUpdateDto(){
+    public UserUpdateDto() {
 
     }
 
@@ -42,13 +43,6 @@ public class UserUpdateDto {
         this.email = email;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 
 
 }

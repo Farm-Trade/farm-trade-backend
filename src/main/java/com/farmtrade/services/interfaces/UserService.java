@@ -12,7 +12,7 @@ public interface UserService {
      Page<User> findPage(Pageable pageable);
 
 
-     User createUser(UserUpdateDto userUpdateDto, String role) throws Exception;
+     User createUser(UserUpdateDto userUpdateDto, String role, String password) throws Exception;
 
      void deleteUser(Long id);
 

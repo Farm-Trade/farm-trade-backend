@@ -9,6 +9,7 @@ import com.farmtrade.services.interfaces.UserService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -17,8 +18,10 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService{
 
     final private UserRepository userRepository;
-    public UserServiceImpl(UserRepository userRepository) {
+    final private BCryptPasswordEncoder bCryptPasswordEncoder;
+    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userRepository = userRepository;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
 
@@ -39,10 +42,10 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public User createUser(UserUpdateDto userUpdateDto, String role) throws Exception {
+    public User createUser(UserUpdateDto userUpdateDto, String role, String password) throws Exception {
         User user = User.builder()
                         .fullName(userUpdateDto.getFullName())
-                        .password(userUpdateDto.getPassword())
+                        .password(bCryptPasswordEncoder.encode(password))
                         .email(userUpdateDto.getEmail())
                         .phone(userUpdateDto.getPhone())
                 .build();

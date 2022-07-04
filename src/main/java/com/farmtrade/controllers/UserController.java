@@ -42,8 +42,11 @@ public class UserController {
     //CREATE
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/{role}")
-    public User createUser(@PathVariable("role") String role, @RequestBody UserUpdateDto userUpdateDto) throws Exception {
-        return userServiceImpl.createUser(userUpdateDto, role);
+    public User createUser(@PathVariable("role") String role,
+                           @RequestBody UserUpdateDto userUpdateDto,
+                           @RequestParam("password") String password) throws Exception
+    {
+        return userServiceImpl.createUser(userUpdateDto, role, password);
 
     }
 
