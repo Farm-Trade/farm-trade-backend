@@ -1,12 +1,19 @@
 package com.farmtrade.entities.enums;
 
-import org.springframework.security.core.GrantedAuthority;
+import com.farmtrade.exceptions.ApiValidationException;
 
-public enum Role implements GrantedAuthority {
-    FARMER, BUYER, ADMIN;
+public enum Role {
+    FARMER,
+    RESELLER,
+    ADMIN;
 
-    @Override
-    public String getAuthority() {
-        return name();
+    public static boolean isCommercialRole(Role role, boolean throwable) throws ApiValidationException {
+        boolean isNotCommercialRole = role.equals(ADMIN);
+
+        if (isNotCommercialRole && throwable) {
+            throw new ApiValidationException("ADMIN role is not one of commercial roles");
+        }
+        return !isNotCommercialRole;
+
     }
 }
