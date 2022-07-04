@@ -1,18 +1,22 @@
 package com.farmtrade.services.interfaces;
 
+import com.farmtrade.dto.UserUpdateDto;
 import com.farmtrade.entities.User;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.web.bind.annotation.RequestBody;
 
-public interface UserService extends UserDetailsService {
-     Page<User> findAllUsers();
+public interface UserService {
+     Page<User> findPage(Pageable pageable);
 
-     HttpStatus createUser(User user);
 
-     HttpStatus deleteUser(Long id);
+     User createUser(UserUpdateDto userUpdateDto, String role) throws Exception;
 
-     HttpStatus updateUser(User user);
+     void deleteUser(Long id);
+
+     User updateUser(Long id, @RequestBody UserUpdateDto userUpdateDto);
 
      User getUser(Long id);
 }

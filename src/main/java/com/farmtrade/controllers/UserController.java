@@ -1,10 +1,16 @@
 package com.farmtrade.controllers;
 
+import com.farmtrade.dto.UserUpdateDto;
 import com.farmtrade.entities.User;
 import com.farmtrade.services.impl.UserServiceImpl;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping("users")
@@ -15,33 +21,38 @@ public class UserController {
         this.userServiceImpl = userServiceImpl;
     }
 
-
-    @GetMapping("/all")
-    public Page<User> findAllUsers(){
-        return null;
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping
+    public Page<User> findPage(@PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable){
+        return userServiceImpl.findPage(pageable);
     }
 
-    //CREATE
-    @PostMapping
-    public HttpStatus createUser(@RequestParam User user){
-        return userServiceImpl.createUser(user);
-
-    }
-
-    //READ
-    @GetMapping("{id}")
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/{id}")
     public User getUser(@PathVariable("id") Long id){
         return userServiceImpl.getUser(id);
     }
 
-    //UPDATE
-    @PutMapping
-    public HttpStatus editUser(@RequestParam User user){
-        return userServiceImpl.updateUser(user);
+    @ResponseStatus(HttpStatus.OK)
+    @PatchMapping
+    public User editUser(@PathVariable Long id, @RequestBody UserUpdateDto userUpdateDto){
+        return userServiceImpl.updateUser(id,userUpdateDto);
     }
-    //DELETE
-    @DeleteMapping
-    public HttpStatus deleteUser(Long id){
-        return userServiceImpl.deleteUser(id);
+
+    //CREATE
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping("/{role}")
+    public User createUser(@PathVariable("role") String role, @RequestBody UserUpdateDto userUpdateDto) throws Exception {
+        return userServiceImpl.createUser(userUpdateDto, role);
+
+    }
+
+
+    //UPDATE
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/{id}")
+    public void deleteUser(Long id){
+        userServiceImpl.deleteUser(id);
     }
 }

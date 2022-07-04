@@ -1,19 +1,20 @@
 package com.farmtrade.entities;
 
 import com.farmtrade.entities.enums.Role;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.Collection;
 
 @Entity(name = "users")
+@Builder
 public class User implements UserDetails {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -22,7 +23,9 @@ public class User implements UserDetails {
 
     @CreationTimestamp
     private Timestamp createdAt;
+    @Column(unique = true)
     private String phone;
+    @Column(unique = true)
     private String email;
     private String password;
 
