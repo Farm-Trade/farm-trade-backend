@@ -43,7 +43,7 @@ public class ProductNameController {
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @PatchMapping("/{id}")
+    @PutMapping("/{id}")
     public ProductName update(@PathVariable Long id, @RequestBody ProductNameCreateUpdateDto productNameDto) {
         return productNameService.update(id, productNameDto);
     }
