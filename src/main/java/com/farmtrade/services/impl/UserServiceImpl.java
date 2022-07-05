@@ -1,8 +1,8 @@
 package com.farmtrade.services.impl;
 
+import com.farmtrade.dto.UserCreateDto;
 import com.farmtrade.dto.UserUpdateDto;
 import com.farmtrade.entities.User;
-import com.farmtrade.entities.enums.Role;
 import com.farmtrade.exceptions.EntityNotFoundException;
 import com.farmtrade.repositories.UserRepository;
 import com.farmtrade.services.interfaces.UserService;
@@ -11,8 +11,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService{
@@ -36,34 +34,28 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public User updateUser(Long id, UserUpdateDto userUpdateDto) {
-        Optional<User> user = userRepository.findById(id);
-        BeanUtils.copyProperties(userUpdateDto, user.get());
-        return userRepository.save(user.get());
+        User user = getUser(id);
+        BeanUtils.copyProperties(userUpdateDto, user);
+        return userRepository.save(user);
     }
 
     @Override
-    public User createUser(UserUpdateDto userUpdateDto, String role, String password) throws Exception {
+    public User createUser(UserCreateDto userCreateDto){
         User user = User.builder()
-                        .fullName(userUpdateDto.getFullName())
-                        .password(bCryptPasswordEncoder.encode(password))
-                        .email(userUpdateDto.getEmail())
-                        .phone(userUpdateDto.getPhone())
+                        .fullName(userCreateDto.getFullName())
+                        .password(bCryptPasswordEncoder.encode(userCreateDto.getPassword()))
+                        .email(userCreateDto.getEmail())
+                        .phone(userCreateDto.getPhone())
+                         .role(userCreateDto.getRole())
                 .build();
 
-        if(role == "farmer"){
-            user.setRole(Role.FARMER);
-        }
-        else if(role == "reseller"){
-            user.setRole(Role.RESELLER);
-        }
-        else throw new Exception("You have no permission to add different role from farmer or reseller");
         return user;
     }
 
     @Override
     public void deleteUser(Long id) {
-        Optional<User> user = userRepository.findById(id);
-        userRepository.delete(user.get());
+        User user = getUser(id);
+        userRepository.delete(user);
     }
 
 
