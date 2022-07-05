@@ -1,19 +1,25 @@
 package com.farmtrade.entities;
 
 import com.farmtrade.entities.enums.Role;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
+
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Collection;
 
 @Entity(name = "users")
+@Data
 @Builder
-public class User implements UserDetails {
+@NoArgsConstructor
+@AllArgsConstructor
+
+public class User implements Serializable /*implements UserDetails*/ {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -87,39 +93,10 @@ public class User implements UserDetails {
         this.role = role;
     }
 
-    @Override
+   /* @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;
-    }
-
-    @Override
-    public String getPassword() {
-        return null;
-    }
-
-    @Override
-    public String getUsername() {
-        return fullName;
-    }
+    }*/
 
 
-    @Override
-    public boolean isAccountNonExpired() {
-        return false;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return false;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return false;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return false;
-    }
 }

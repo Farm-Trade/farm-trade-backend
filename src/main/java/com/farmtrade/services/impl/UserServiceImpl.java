@@ -9,19 +9,21 @@ import com.farmtrade.services.interfaces.UserService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserServiceImpl implements UserService{
 
     final private UserRepository userRepository;
-    final private BCryptPasswordEncoder bCryptPasswordEncoder;
+/*    final private BCryptPasswordEncoder bCryptPasswordEncoder;
     public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userRepository = userRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-    }
+    }*/
 
+    public UserServiceImpl(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Override
     public Page<User> findPage(Pageable pageable) {
@@ -43,7 +45,7 @@ public class UserServiceImpl implements UserService{
     public User createUser(UserCreateDto userCreateDto){
         User user = User.builder()
                         .fullName(userCreateDto.getFullName())
-                        .password(bCryptPasswordEncoder.encode(userCreateDto.getPassword()))
+                        .password(userCreateDto.getPassword())
                         .email(userCreateDto.getEmail())
                         .phone(userCreateDto.getPhone())
                          .role(userCreateDto.getRole())

@@ -33,7 +33,7 @@ public class UserController {
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @PatchMapping("/update/{id}")
+    @PutMapping("/{id}")
     public User editUser(@PathVariable("id") Long id, @RequestBody UserUpdateDto userUpdateDto){
         return userService.updateUser(id, userUpdateDto);
     }
