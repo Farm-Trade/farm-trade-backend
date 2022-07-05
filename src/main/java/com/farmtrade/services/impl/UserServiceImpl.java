@@ -51,7 +51,7 @@ public class UserServiceImpl implements UserService{
                          .role(userCreateDto.getRole())
                 .build();
 
-        return user;
+        return userRepository.save(user);
     }
 
     @Override
