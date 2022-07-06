@@ -1,8 +1,11 @@
 package com.farmtrade.services.impl;
 
+import com.farmtrade.dto.ActivationCodeDto;
 import com.farmtrade.dto.UserCreateDto;
 import com.farmtrade.dto.UserUpdateDto;
 import com.farmtrade.entities.User;
+import com.farmtrade.entities.enums.Role;
+import com.farmtrade.exceptions.ApiValidationException;
 import com.farmtrade.exceptions.EntityNotFoundException;
 import com.farmtrade.repositories.UserRepository;
 import com.farmtrade.services.interfaces.UserService;
@@ -61,7 +64,23 @@ public class UserServiceImpl implements UserService{
     }
 
 
+    @Override
+    public User registration(User user) throws ApiValidationException {
+        if(user.getRole() != Role.ADMIN){
+            return userRepository.save(user);
+        }
+        else {
+            throw new ApiValidationException("Chose another role");
+        }
+    }
 
-
+    @Override
+    public void userActivation(ActivationCodeDto activationCode) {
+       User user = userRepository.findByActivationCode(activationCode.getActivationCode())
+               .orElseThrow(() -> new ApiValidationException("User is not found"));
+        user.setActive(true);
+        user.setActivationCode(null);
+        userRepository.save(user);
+    }
 
 }
