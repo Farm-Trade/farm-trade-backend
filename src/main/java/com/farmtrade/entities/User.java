@@ -1,6 +1,7 @@
 package com.farmtrade.entities;
 
 import com.farmtrade.entities.enums.Role;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,6 +14,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Collection;
+import java.util.Set;
 
 @Entity(name = "users")
 @Data
@@ -39,6 +41,9 @@ public class User implements Serializable /*implements UserDetails*/ {
     private Role role;
     @JsonIgnore
     private String activationCode;
+    @OneToMany(mappedBy = "owner",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @JsonBackReference
+    private Set<Product> products;
 
 
 

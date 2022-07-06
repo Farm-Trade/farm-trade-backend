@@ -22,6 +22,11 @@ services:
       - DB_USER=farmtrade
       - DB_PASSWORD=farmtrade
       - DB_HOST=host.docker.internal
+      - DB_PORT=port.docker.internal
+      - TWILIO_SID=AC2efae4bfa510c1ba458969bafdabba96
+      - TWILIO_TOKEN=a81853ab12b41fefa88db75c6db4d9a2
+      - TWILIO_NUMBER=+19108125369
+      - PRODUCTION=
     networks:
       - postgres
 

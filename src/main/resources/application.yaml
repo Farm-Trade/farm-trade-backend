@@ -20,6 +20,10 @@ spring:
       platform: postgres
 
 twilio:
-  accountSid: ${TWILIO_SID}
-  authToken: ${TWILIO_TOKEN}
-  number: ${TWILIO_NUMBER}
+  accountSid: ${TWILIO_SID:AC2efae4bfa510c1ba458969bafdabba96}
+  authToken: ${TWILIO_TOKEN:a81853ab12b41fefa88db75c6db4d9a2}
+  number: ${TWILIO_NUMBER:+19108125369}
+
+
+user:
+  sendActivation: ${SEND_ACTIVATION:true}
