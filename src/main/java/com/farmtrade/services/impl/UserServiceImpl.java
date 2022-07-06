@@ -79,7 +79,7 @@ public class UserServiceImpl implements UserService{
             twilioService.sendVerificationMessage(user, activationCode);
             return userRepository.save(user);
         }
-        
+
             throw new ApiValidationException("Chose another role");
 
     }

@@ -2,6 +2,7 @@ spring:
   security:
     basic:
       enabled: false
+
   jpa:
     database: POSTGRESQL
     show-sql: true
@@ -18,3 +19,7 @@ spring:
     init:
       platform: postgres
 
+twilio:
+  accountSid: ${TWILIO_SID}
+  authToken: ${TWILIO_TOKEN}
+  number: ${TWILIO_NUMBER}
