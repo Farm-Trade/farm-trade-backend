@@ -1,6 +1,7 @@
 package com.farmtrade.entities;
 
 import com.farmtrade.entities.enums.Role;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -30,11 +31,14 @@ public class User implements Serializable /*implements UserDetails*/ {
     @Column(unique = true)
     private String phone;
     @Column(unique = true)
-    private String email = null;
+    private String email;
+    @JsonIgnore
     private String password;
-    private boolean isActive = false;
+    @Column(columnDefinition = "boolean default false")
+    private boolean isActive;
     private Role role;
-    private String activationCode = null;
+    @JsonIgnore
+    private String activationCode;
 
 
 

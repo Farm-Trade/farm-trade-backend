@@ -26,6 +26,13 @@
 			<artifactId>spring-boot-starter-validation</artifactId>
 			<version>2.7.1</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.twilio.sdk/twilio -->
+<!--		TWILIO-->
+		<dependency>
+			<groupId>com.twilio.sdk</groupId>
+			<artifactId>twilio</artifactId>
+			<version>8.30.0</version>
+		</dependency>
 
 
 		<dependency>
