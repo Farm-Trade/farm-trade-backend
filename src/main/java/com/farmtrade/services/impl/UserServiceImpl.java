@@ -58,7 +58,8 @@ public class UserServiceImpl implements UserService{
                         .password(userCreateDto.getPassword())
                         .email(userCreateDto.getEmail())
                         .phone(userCreateDto.getPhone())
-                         .role(userCreateDto.getRole())
+                        .isActive(true)
+                        .role(userCreateDto.getRole())
                 .build();
 
         return userRepository.save(user);
