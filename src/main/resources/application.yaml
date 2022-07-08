@@ -24,6 +24,5 @@ twilio:
   authToken: ${TWILIO_TOKEN:a81853ab12b41fefa88db75c6db4d9a2}
   number: ${TWILIO_NUMBER:+19108125369}
 
-
 user:
   sendActivation: ${SEND_ACTIVATION:true}

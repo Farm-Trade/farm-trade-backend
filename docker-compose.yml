@@ -12,7 +12,7 @@ services:
       - postgres
 
   farm-trade-backend:
-    image: ghcr.io/farm-trade/farm-trade-backend:af1bc6743190070c03f7327f243c39de502a93f7
+    image: ghcr.io/farm-trade/farm-trade-backend
     ports:
       - "8000:8080"
     depends_on:

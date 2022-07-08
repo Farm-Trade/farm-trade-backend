@@ -11,18 +11,21 @@ import com.farmtrade.repositories.UserRepository;
 import com.farmtrade.services.interfaces.UserService;
 import com.farmtrade.services.smpp.TwilioService;
 import com.farmtrade.utils.RandomUtil;
+import org.hibernate.Transaction;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.persistence.EntityTransaction;
 
 @Service
 public class UserServiceImpl implements UserService {
 
     final private UserRepository userRepository;
     final private TwilioService twilioService;
-
     @Value("${user.sendActivation}")
     private boolean sendActivation;
 
@@ -62,6 +65,7 @@ public class UserServiceImpl implements UserService {
                 .password(userCreateDto.getPassword())
                 .email(userCreateDto.getEmail())
                 .phone(userCreateDto.getPhone())
+                .isActive(true)
                 .role(userCreateDto.getRole())
                 .build();
 
@@ -76,7 +80,8 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public User registration(User user) throws ApiValidationException {
+    @Transactional
+    public User registration(User user) throws ApiValidationException{
         if (user.getRole() == Role.ADMIN) {
             throw new ApiValidationException("Chose another role");
         }
@@ -84,11 +89,11 @@ public class UserServiceImpl implements UserService {
         if (sendActivation) {
             String activationCode = RandomUtil.getRandomNumberString();
             user.setActivationCode(activationCode);
+            userRepository.save(user);
             twilioService.sendVerificationMessage(user, activationCode);
-        } else {
-            user.setActive(true);
+            return user;
         }
-
+        user.setActive(true);
         return userRepository.save(user);
     }
 
