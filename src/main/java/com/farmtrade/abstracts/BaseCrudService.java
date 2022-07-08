@@ -1,4 +1,4 @@
-package com.farmtrade.services.abstracts;
+package com.farmtrade.abstracts;
 
 import com.farmtrade.exceptions.EntityNotFoundException;
 import org.springframework.beans.BeanUtils;
@@ -6,15 +6,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public abstract class BaseCrudService<T, ID, DTO> {
-    private final JpaRepository<T, ID> repository;
-    private final Set<String> ignoreUpdateProperties;
+    protected final JpaRepository<T, ID> repository;
+    protected Set<String> ignoreUpdateProperties = new HashSet<>();
 
-    protected BaseCrudService(JpaRepository<T, ID> repository, Set<String> ignoreUpdateProperties) {
+    protected BaseCrudService(JpaRepository<T, ID> repository) {
         this.repository = repository;
-        this.ignoreUpdateProperties = ignoreUpdateProperties;
     }
 
     public abstract Class<T> getClassInstance();
@@ -27,7 +27,7 @@ public abstract class BaseCrudService<T, ID, DTO> {
         return repository.findById(id).orElseThrow(() -> new EntityNotFoundException(getClassInstance(), String.valueOf(id)));
     }
 
-    public T create(T entity) {
+    public T simpleCreate(T entity) {
         return repository.save(entity);
     }
 
@@ -41,12 +41,6 @@ public abstract class BaseCrudService<T, ID, DTO> {
         return repository.save(entityFromDB);
     }
 
-    //
-//    public T partialUpdate(ID id, DTO updateDTO) {
-//        T entityFromDB = findOne(id);
-//        // TODO Add partial update
-//        return repository.save(entityFromDB);
-//    }
     public void delete(ID id) {
         T entity = findOne(id);
         repository.delete(entity);
