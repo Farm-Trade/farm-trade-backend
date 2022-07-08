@@ -11,10 +11,14 @@ import com.farmtrade.repositories.UserRepository;
 import com.farmtrade.services.interfaces.UserService;
 import com.farmtrade.services.smpp.TwilioService;
 import com.farmtrade.utils.RandomUtil;
+import org.hibernate.Transaction;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.persistence.EntityTransaction;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -74,21 +78,19 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public User registration(User user) throws ApiValidationException {
+    @Transactional
+    public User registration(User user){
         if (user.getRole() != Role.ADMIN) {
             String activationCode = RandomUtil.getRandomNumberString();
             user.setActivationCode(activationCode);
             userRepository.save(user);
-            try {
-                twilioService.sendVerificationMessage(user, activationCode);
-                return user;
-            } catch (RuntimeException e) {
-                userRepository.delete(user);
-                throw e;
-            }
-                
+            twilioService.sendVerificationMessage(user, activationCode);
+            return user;
         }
-        throw new ApiValidationException("Chose another role");
+        else{
+            throw new ApiValidationException(String.format("Chose another role"));
+        }
+
 
     }
 
