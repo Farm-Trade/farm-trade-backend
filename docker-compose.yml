@@ -12,7 +12,7 @@ services:
       - postgres
 
   farm-trade-backend:
-    image: ghcr.io/farm-trade/farm-trade-backend
+    image: ghcr.io/farm-trade/farm-trade-backend:af1bc6743190070c03f7327f243c39de502a93f7
     ports:
       - "8000:8080"
     depends_on:
@@ -22,7 +22,7 @@ services:
       - DB_USER=farmtrade
       - DB_PASSWORD=farmtrade
       - DB_HOST=host.docker.internal
-      - DB_PORT=port.docker.internal
+      - DB_PORT=5432
       - TWILIO_SID=AC2efae4bfa510c1ba458969bafdabba96
       - TWILIO_TOKEN=a81853ab12b41fefa88db75c6db4d9a2
       - TWILIO_NUMBER=+19108125369
