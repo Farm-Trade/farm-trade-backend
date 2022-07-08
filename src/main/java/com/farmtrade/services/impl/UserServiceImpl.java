@@ -8,16 +8,20 @@ import com.farmtrade.entities.enums.Role;
 import com.farmtrade.exceptions.ApiValidationException;
 import com.farmtrade.exceptions.EntityNotFoundException;
 import com.farmtrade.repositories.UserRepository;
-import com.farmtrade.services.smpp.TwilioService;
 import com.farmtrade.services.interfaces.UserService;
+import com.farmtrade.services.smpp.TwilioService;
 import com.farmtrade.utils.RandomUtil;
+import org.hibernate.Transaction;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.persistence.EntityTransaction;
 
 @Service
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
 
     final private UserRepository userRepository;
     final private TwilioService twilioService;
@@ -39,6 +43,7 @@ public class UserServiceImpl implements UserService{
     public Page<User> findPage(Pageable pageable) {
         return userRepository.findAll(pageable);
     }
+
     @Override
     public User getUser(Long id) {
         return userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(User.class, id.toString()));
@@ -52,13 +57,14 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public User createUser(UserCreateDto userCreateDto){
+    public User createUser(UserCreateDto userCreateDto) {
         User user = User.builder()
-                        .fullName(userCreateDto.getFullName())
-                        .password(userCreateDto.getPassword())
-                        .email(userCreateDto.getEmail())
-                        .phone(userCreateDto.getPhone())
-                         .role(userCreateDto.getRole())
+                .fullName(userCreateDto.getFullName())
+                .password(userCreateDto.getPassword())
+                .email(userCreateDto.getEmail())
+                .phone(userCreateDto.getPhone())
+                .isActive(true)
+                .role(userCreateDto.getRole())
                 .build();
 
         return userRepository.save(user);
@@ -72,22 +78,26 @@ public class UserServiceImpl implements UserService{
 
 
     @Override
-    public User registration(User user) throws ApiValidationException {
-        if(user.getRole() != Role.ADMIN){
+    @Transactional
+    public User registration(User user){
+        if (user.getRole() != Role.ADMIN) {
             String activationCode = RandomUtil.getRandomNumberString();
             user.setActivationCode(activationCode);
+            userRepository.save(user);
             twilioService.sendVerificationMessage(user, activationCode);
-            return userRepository.save(user);
+            return user;
+        }
+        else{
+            throw new ApiValidationException(String.format("Chose another role"));
         }
 
-            throw new ApiValidationException("Chose another role");
 
     }
 
     @Override
     public void userActivation(ActivationCodeDto activationCode) {
-       User user = userRepository.findByActivationCode(activationCode.getActivationCode())
-               .orElseThrow(() -> new ApiValidationException("User is not found"));
+        User user = userRepository.findByActivationCode(activationCode.getActivationCode())
+                .orElseThrow(() -> new ApiValidationException("User is not found"));
         user.setActive(true);
         user.setActivationCode(null);
         userRepository.save(user);
