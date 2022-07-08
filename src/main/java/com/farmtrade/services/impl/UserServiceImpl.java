@@ -13,6 +13,7 @@ import com.farmtrade.services.smpp.TwilioService;
 import com.farmtrade.utils.RandomUtil;
 import org.hibernate.Transaction;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,8 @@ public class UserServiceImpl implements UserService {
 
     final private UserRepository userRepository;
     final private TwilioService twilioService;
-
+    @Value("${user.sendActivation}")
+    private boolean sendActivation;
 
 
 /*    final private BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -80,18 +82,19 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public User registration(User user){
-        if (user.getRole() != Role.ADMIN) {
+        if (user.getRole() == Role.ADMIN) {
+            throw new ApiValidationException("Chose another role");
+        }
+
+        if (sendActivation) {
             String activationCode = RandomUtil.getRandomNumberString();
             user.setActivationCode(activationCode);
             userRepository.save(user);
             twilioService.sendVerificationMessage(user, activationCode);
             return user;
         }
-        else{
-            throw new ApiValidationException(String.format("Chose another role"));
-        }
-
-
+        user.setActive(true);
+        return userRepository.save(user);
     }
 
     @Override
