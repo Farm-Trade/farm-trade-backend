@@ -11,15 +11,12 @@ import com.farmtrade.repositories.UserRepository;
 import com.farmtrade.services.interfaces.UserService;
 import com.farmtrade.services.smpp.TwilioService;
 import com.farmtrade.utils.RandomUtil;
-import org.hibernate.Transaction;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.persistence.EntityTransaction;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -81,11 +78,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public User registration(User user){
-        if (user.getRole() == Role.ADMIN) {
+    public User registration(UserCreateDto userCreateDto) {
+        if (userCreateDto.getRole() == Role.ADMIN) {
             throw new ApiValidationException("Chose another role");
         }
 
+        User user = User.builder()
+                .fullName(userCreateDto.getFullName())
+                .phone(userCreateDto.getPhone())
+                .email(userCreateDto.getEmail())
+                .role(userCreateDto.getRole())
+                .build();
         if (sendActivation) {
             String activationCode = RandomUtil.getRandomNumberString();
             user.setActivationCode(activationCode);
