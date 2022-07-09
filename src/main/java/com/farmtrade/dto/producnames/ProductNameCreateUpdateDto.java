@@ -1,4 +1,4 @@
-package com.farmtrade.dto;
+package com.farmtrade.dto.producnames;
 
 import com.farmtrade.entities.enums.ProductType;
 import lombok.AllArgsConstructor;

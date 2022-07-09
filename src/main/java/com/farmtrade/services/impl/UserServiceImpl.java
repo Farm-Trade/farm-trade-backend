@@ -78,7 +78,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public User registration(UserCreateDto userCreateDto) {
+    public User registration(UserCreateDto userCreateDto) throws ApiValidationException {
         if (userCreateDto.getRole() == Role.ADMIN) {
             throw new ApiValidationException("Chose another role");
         }
