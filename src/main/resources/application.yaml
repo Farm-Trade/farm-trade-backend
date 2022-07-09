@@ -2,6 +2,10 @@ spring:
   security:
     basic:
       enabled: false
+    jwt:
+      token:
+        secret : ${JWT_SECRET}
+        expired : 3600000
 
   jpa:
     database: POSTGRESQL

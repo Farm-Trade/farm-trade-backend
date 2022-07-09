@@ -1,9 +1,10 @@
 package com.farmtrade.entities.enums;
 
 import com.farmtrade.exceptions.ApiValidationException;
+import org.springframework.security.core.GrantedAuthority;
 
 
-public enum Role /*implements GrantedAuthority*/{
+public enum Role implements GrantedAuthority {
     FARMER,
     RESELLER,
     ADMIN;
@@ -20,9 +21,10 @@ public enum Role /*implements GrantedAuthority*/{
 
 
     }
-/*
+
     @Override
     public String getAuthority() {
         return name();
-    }*/
+    }
+
 }

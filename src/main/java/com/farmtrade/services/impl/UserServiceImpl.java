@@ -15,6 +15,9 @@ import org.hibernate.Transaction;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,18 +28,12 @@ public class UserServiceImpl implements UserService {
 
     final private UserRepository userRepository;
     final private TwilioService twilioService;
+    final private BCryptPasswordEncoder bCryptPasswordEncoder;
 
-
-
-/*    final private BCryptPasswordEncoder bCryptPasswordEncoder;
-    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
-        this.userRepository = userRepository;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-    }*/
-
-    public UserServiceImpl(UserRepository userRepository, TwilioService twilioService) {
+    public UserServiceImpl(UserRepository userRepository, TwilioService twilioService,BCryptPasswordEncoder bCryptPasswordEncoder ) {
         this.userRepository = userRepository;
         this.twilioService = twilioService;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
     @Override
@@ -50,6 +47,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User getUserByPhone(String phone) {
+        return userRepository.findByPhone(phone);
+    }
+
+    @Override
     public User updateUser(Long id, UserUpdateDto userUpdateDto) {
         User user = getUser(id);
         BeanUtils.copyProperties(userUpdateDto, user);
@@ -60,7 +62,7 @@ public class UserServiceImpl implements UserService {
     public User createUser(UserCreateDto userCreateDto) {
         User user = User.builder()
                 .fullName(userCreateDto.getFullName())
-                .password(userCreateDto.getPassword())
+                .password(bCryptPasswordEncoder.encode(userCreateDto.getPassword()))
                 .email(userCreateDto.getEmail())
                 .phone(userCreateDto.getPhone())
                 .isActive(true)
@@ -83,8 +85,9 @@ public class UserServiceImpl implements UserService {
         if (user.getRole() != Role.ADMIN) {
             String activationCode = RandomUtil.getRandomNumberString();
             user.setActivationCode(activationCode);
+            user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
             userRepository.save(user);
-            twilioService.sendVerificationMessage(user, activationCode);
+            //twilioService.sendVerificationMessage(user, activationCode);
             return user;
         }
         else{
@@ -102,5 +105,6 @@ public class UserServiceImpl implements UserService {
         user.setActivationCode(null);
         userRepository.save(user);
     }
+
 
 }
