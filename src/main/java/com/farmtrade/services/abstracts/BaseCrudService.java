@@ -1,19 +1,23 @@
 package com.farmtrade.services.abstracts;
 
+import com.farmtrade.entities.User;
 import com.farmtrade.exceptions.EntityNotFoundException;
+import com.farmtrade.repositories.BaseJpaAndSpecificationRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import java.util.HashSet;
 import java.util.Set;
 
 public abstract class BaseCrudService<T, ID, DTO> {
-    protected final JpaRepository<T, ID> repository;
+    protected final BaseJpaAndSpecificationRepository<T, ID> repository;
     protected Set<String> ignoreUpdateProperties = new HashSet<>();
 
-    protected BaseCrudService(JpaRepository<T, ID> repository) {
+    protected BaseCrudService(BaseJpaAndSpecificationRepository<T, ID> repository) {
         this.repository = repository;
     }
 
@@ -23,6 +27,10 @@ public abstract class BaseCrudService<T, ID, DTO> {
         return repository.findAll(pageable);
     }
 
+    public Page<T> findPage(Specification<T> specification, Pageable pageable) {
+        return repository.findAll(specification, pageable);
+    }
+    
     public T findOne(ID id) {
         return repository.findById(id).orElseThrow(() -> new EntityNotFoundException(getClassInstance(), String.valueOf(id)));
     }
