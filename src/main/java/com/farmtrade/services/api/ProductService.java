@@ -7,7 +7,6 @@ import com.farmtrade.entities.ProductName;
 import com.farmtrade.exceptions.BadRequestException;
 import com.farmtrade.repositories.ProductRepository;
 import com.farmtrade.services.abstracts.BaseCrudService;
-import com.farmtrade.services.interfaces.ProductNameService;
 import com.farmtrade.services.upload.FileStorageService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;

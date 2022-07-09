@@ -1,11 +1,11 @@
 package com.farmtrade.controllers;
 
-import com.farmtrade.dto.ApproveProductNameDto;
-import com.farmtrade.dto.ProductNameCreateUpdateDto;
+import com.farmtrade.dto.producnames.ApproveProductNameDto;
+import com.farmtrade.dto.producnames.ProductNameCreateUpdateDto;
 import com.farmtrade.entities.ProductName;
 import com.farmtrade.entities.enums.Role;
 import com.farmtrade.exceptions.ApiValidationException;
-import com.farmtrade.services.interfaces.ProductNameService;
+import com.farmtrade.services.api.ProductNameService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -45,13 +45,13 @@ public class ProductNameController {
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/{id}")
     public ProductName update(@PathVariable Long id, @RequestBody ProductNameCreateUpdateDto productNameDto) {
-        return productNameService.update(id, productNameDto);
+        return productNameService.fullyUpdate(id, productNameDto);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
-        productNameService.deleteById(id);
+        productNameService.delete(id);
     }
 
     @ResponseStatus(HttpStatus.OK)

@@ -1,7 +1,6 @@
 package com.farmtrade.entities;
 
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;

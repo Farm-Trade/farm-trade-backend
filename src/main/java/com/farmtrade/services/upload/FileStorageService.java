@@ -1,14 +1,20 @@
 package com.farmtrade.services.upload;
 
-import com.farmtrade.configurations.FileStorageProperties;
 import com.farmtrade.exceptions.FileNotFoundException;
 import com.farmtrade.exceptions.FileStorageException;
+import com.farmtrade.properties.FileStorageProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
@@ -20,6 +26,7 @@ import java.util.Set;
 
 @Service
 public class FileStorageService {
+    private static final Logger logger = LoggerFactory.getLogger(FileStorageService.class);
     private final Path fileStorageLocation;
     private final FileStorageProperties fileStorageProperties;
 
@@ -52,6 +59,35 @@ public class FileStorageService {
         return storeFile(img, imagePath);
     }
 
+    public void removeFile(String filePath) {
+        Path targetLocation = this.fileStorageLocation.resolve(filePath);
+        try {
+            Files.deleteIfExists(targetLocation);
+        } catch (IOException ex) {
+            throw new FileStorageException("Could not remove file. Please try again!", ex);
+        }
+    }
+
+    public ResponseEntity<Resource> serveImage(String imgName, HttpServletRequest request) {
+        Resource resource = loadFileAsResource(fileStorageProperties.getImageDir() + imgName);
+
+        String contentType = null;
+        try {
+            contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
+        } catch (IOException ex) {
+            logger.info("Could not determine file type.");
+        }
+
+        if (contentType == null) {
+            contentType = "application/octet-stream";
+        }
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                .body(resource);
+    }
+
     private String storeFile(MultipartFile file, String newFileName) {
         try {
             Path targetLocation = this.fileStorageLocation.resolve(newFileName);
@@ -63,15 +99,7 @@ public class FileStorageService {
         }
     }
 
-    public void removeFile(String filePath) {
-        Path targetLocation = this.fileStorageLocation.resolve(filePath);
-        try {
-            Files.deleteIfExists(targetLocation);
-        } catch (IOException ex) {
-            throw new FileStorageException("Could not remove file. Please try again!", ex);
-        }
-    }
-    public Resource loadFileAsResource(String fileName) {
+    private Resource loadFileAsResource(String fileName) {
         try {
             Path filePath = this.fileStorageLocation.resolve(fileName).normalize();
             Resource resource = new UrlResource(filePath.toUri());
