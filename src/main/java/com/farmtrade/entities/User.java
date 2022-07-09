@@ -9,20 +9,17 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
-
 import javax.persistence.*;
-import java.io.Serializable;
 import java.sql.Timestamp;
-import java.util.Collection;
 import java.util.Set;
 
 @Entity(name = "users")
-@Data
 @Builder
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 
-public class User implements Serializable /*implements UserDetails*/ {
+public class User  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -38,19 +35,12 @@ public class User implements Serializable /*implements UserDetails*/ {
     private String password;
     @Column(columnDefinition = "boolean default false")
     private boolean isActive;
+    @Enumerated(EnumType.STRING)
     private Role role;
     @JsonIgnore
     private String activationCode;
     @OneToMany(mappedBy = "owner",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     @JsonBackReference
     private Set<Product> products;
-
-
-
-   /* @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
-    }*/
-
 
 }

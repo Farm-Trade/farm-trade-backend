@@ -7,9 +7,12 @@ import com.farmtrade.entities.User;
 import com.farmtrade.exceptions.ApiValidationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.RequestBody;
 
-public interface UserService {
+public interface UserService  {
      Page<User> findPage(Pageable pageable);
 
 
@@ -23,5 +26,8 @@ public interface UserService {
 
      User registration(UserCreateDto user) throws ApiValidationException;
 
+     User getUserByPhone(String phone);
+
      void userActivation(ActivationCodeDto activationCode);
+
 }
