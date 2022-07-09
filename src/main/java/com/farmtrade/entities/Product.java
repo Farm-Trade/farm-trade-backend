@@ -1,13 +1,12 @@
 package com.farmtrade.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
+import java.io.Serializable;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "products")
@@ -15,16 +14,17 @@ import javax.validation.constraints.Min;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Product {
+@EqualsAndHashCode
+public class Product implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Min(value = 1, message = "Size should be equal or greater 1")
-    private Float quantity;
-    @ColumnDefault(value = "0")
-    private Float reservedQuantity;
+    private BigDecimal quantity;
+    @Column(nullable = false)
+    private BigDecimal reservedQuantity;
     @Min(value = 1, message = "Size should be equal or greater 1")
-    private Float size;
+    private BigDecimal size;
     private String img;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "product_name_id", updatable = false)

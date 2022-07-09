@@ -19,6 +19,13 @@ spring:
     init:
       platform: postgres
 
+  servlet:
+    multipart:
+      enabled: true
+      file-size-threshold: 2KB
+      max-file-size: 200MB
+      max-request-size: 215MB
+
 twilio:
   accountSid: ${TWILIO_SID:AC2efae4bfa510c1ba458969bafdabba96}
   authToken: ${TWILIO_TOKEN:a81853ab12b41fefa88db75c6db4d9a2}
@@ -26,3 +33,13 @@ twilio:
 
 user:
   sendActivation: ${SEND_ACTIVATION:true}
+
+file:
+  upload-dir: uploads/
+  image-dir: img/
+  image-types:
+    - png
+    - jpg
+    - jpeg
+
+

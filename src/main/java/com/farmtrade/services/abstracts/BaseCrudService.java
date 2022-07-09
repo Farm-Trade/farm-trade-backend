@@ -1,4 +1,4 @@
-package com.farmtrade.abstracts;
+package com.farmtrade.services.abstracts;
 
 import com.farmtrade.exceptions.EntityNotFoundException;
 import org.springframework.beans.BeanUtils;
