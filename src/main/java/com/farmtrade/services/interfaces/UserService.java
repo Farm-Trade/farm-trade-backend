@@ -21,7 +21,7 @@ public interface UserService {
 
      User getUser(Long id);
 
-     User registration(User user) throws ApiValidationException;
+     User registration(UserCreateDto user) throws ApiValidationException;
 
      void userActivation(ActivationCodeDto activationCode);
 }

@@ -49,7 +49,6 @@ public class UserController {
     public User createUser(@RequestBody UserCreateDto userCreateDto)
     {
         return userService.createUser(userCreateDto);
-
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -61,7 +60,7 @@ public class UserController {
 
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/registration")
-    public User registration(@RequestBody User user){
+    public User registration(@RequestBody UserCreateDto user){
         return userService.registration(user);
     }
 

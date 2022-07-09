@@ -78,11 +78,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public User registration(User user) throws ApiValidationException{
-        if (user.getRole() == Role.ADMIN) {
+    public User registration(UserCreateDto userCreateDto) throws ApiValidationException {
+        if (userCreateDto.getRole() == Role.ADMIN) {
             throw new ApiValidationException("Chose another role");
         }
 
+        User user = User.builder()
+                .fullName(userCreateDto.getFullName())
+                .phone(userCreateDto.getPhone())
+                .email(userCreateDto.getEmail())
+                .role(userCreateDto.getRole())
+                .build();
         if (sendActivation) {
             String activationCode = RandomUtil.getRandomNumberString();
             user.setActivationCode(activationCode);
