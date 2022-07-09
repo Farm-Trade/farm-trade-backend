@@ -4,10 +4,14 @@ import com.farmtrade.dto.product.CreateProductDto;
 import com.farmtrade.dto.product.UpdateProductDto;
 import com.farmtrade.entities.Product;
 import com.farmtrade.entities.ProductName;
+import com.farmtrade.entities.User;
 import com.farmtrade.exceptions.BadRequestException;
 import com.farmtrade.repositories.ProductRepository;
 import com.farmtrade.services.abstracts.BaseCrudService;
 import com.farmtrade.services.upload.FileStorageService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
