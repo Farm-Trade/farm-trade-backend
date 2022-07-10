@@ -88,13 +88,13 @@ public class UserServiceImpl implements UserService {
                 .fullName(userCreateDto.getFullName())
                 .phone(userCreateDto.getPhone())
                 .email(userCreateDto.getEmail())
+                .password(bCryptPasswordEncoder.encode(userCreateDto.getPassword()))
                 .role(userCreateDto.getRole())
                 .build();
 
         if (sendActivation) {
             String activationCode = RandomUtil.getRandomNumberString();
             user.setActivationCode(activationCode);
-            user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
             userRepository.save(user);
             twilioService.sendVerificationMessage(user, activationCode);
             return user;

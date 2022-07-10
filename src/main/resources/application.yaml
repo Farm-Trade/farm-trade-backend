@@ -4,7 +4,7 @@ spring:
       enabled: false
     jwt:
       token:
-        secret : ${JWT_SECRET}
+        secret : ${JWT_SECRET:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9}
         expired : 3600000
 
   jpa:
