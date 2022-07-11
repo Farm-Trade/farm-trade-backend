@@ -61,12 +61,12 @@ public class JwtTokenProvider {
     }
 
     public String getPhone(String token){
-        return Jwts.parser().setSigningKey(secret).parseClaimsJwt(token).getBody().getSubject();
+        return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody().getSubject();
     }
 
     public String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
-        if (bearerToken != null && bearerToken.startsWith("Bearer_")){
+        if (bearerToken != null){ //&& bearerToken.startsWith("Bearer_")){
             return bearerToken.substring(7, bearerToken.length());
         }
         return null;
