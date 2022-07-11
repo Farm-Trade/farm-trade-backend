@@ -11,7 +11,9 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+
 import java.util.Set;
+
 
 @Entity(name = "users")
 @Builder
@@ -31,7 +33,7 @@ public class User  {
     private String phone;
     @Column(unique = true)
     private String email;
-    @JsonIgnore
+
     private String password;
     @Column(columnDefinition = "boolean default false")
     private boolean isActive;
@@ -39,8 +41,10 @@ public class User  {
     private Role role;
     @JsonIgnore
     private String activationCode;
+
     @OneToMany(mappedBy = "owner",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     @JsonBackReference
     private Set<Product> products;
+
 
 }
