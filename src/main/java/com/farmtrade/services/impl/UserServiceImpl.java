@@ -21,14 +21,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UserServiceImpl implements UserService {
-    @Value("${user.sendActivation}")
-    private boolean sendActivation;
 
     final private UserRepository userRepository;
     final private TwilioService twilioService;
     final private BCryptPasswordEncoder bCryptPasswordEncoder;
-
-
+    @Value("${user.sendActivation}")
+    private boolean sendActivation;
+    
     public UserServiceImpl(UserRepository userRepository, TwilioService twilioService, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userRepository = userRepository;
         this.twilioService = twilioService;
@@ -89,6 +88,7 @@ public class UserServiceImpl implements UserService {
                 .fullName(userCreateDto.getFullName())
                 .phone(userCreateDto.getPhone())
                 .email(userCreateDto.getEmail())
+                .password(bCryptPasswordEncoder.encode(userCreateDto.getPassword()))
                 .role(userCreateDto.getRole())
                 .build();
 
