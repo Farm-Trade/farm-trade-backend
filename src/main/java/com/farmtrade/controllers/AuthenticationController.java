@@ -11,6 +11,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,14 +27,16 @@ public class AuthenticationController {
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
     private final UserService userService;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public AuthenticationController(AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider, UserService userService) {
+    public AuthenticationController(BCryptPasswordEncoder bCryptPasswordEncoder, AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider, UserService userService) {
         this.authenticationManager = authenticationManager;
         this.jwtTokenProvider = jwtTokenProvider;
         this.userService = userService;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
-    @PostMapping("/api/login")
+    @PostMapping("api/login")
     public ResponseEntity login (@RequestBody AuthenticationDto authenticationDto){
         try{
             String phone = authenticationDto.getPhone();
@@ -41,9 +44,9 @@ public class AuthenticationController {
                     new UsernamePasswordAuthenticationToken(phone, authenticationDto.getPassword()));
 
             User user = userService.getUserByPhone(phone);
-            if(user == null){
-                throw new UsernameNotFoundException("User with such phone is not found");
-            }
+               if(user == null){
+                   throw new UsernameNotFoundException("User with such phone is not found");
+               }
             List<Role> list = new ArrayList<>();
             list.add(user.getRole())  ;
             String token = jwtTokenProvider.createToken(phone, list);

@@ -27,7 +27,7 @@ public class UserServiceImpl implements UserService {
     final private BCryptPasswordEncoder bCryptPasswordEncoder;
     @Value("${user.sendActivation}")
     private boolean sendActivation;
-    
+
     public UserServiceImpl(UserRepository userRepository, TwilioService twilioService, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userRepository = userRepository;
         this.twilioService = twilioService;
@@ -56,6 +56,15 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(user);
     }
 
+
+    @Override
+    public void deleteUser(Long id) {
+        User user = getUser(id);
+        userRepository.delete(user);
+    }
+
+
+
     @Override
     public User createUser(UserCreateDto userCreateDto) {
         User user = User.builder()
@@ -69,13 +78,6 @@ public class UserServiceImpl implements UserService {
 
         return userRepository.save(user);
     }
-
-    @Override
-    public void deleteUser(Long id) {
-        User user = getUser(id);
-        userRepository.delete(user);
-    }
-
 
     @Override
     @Transactional
@@ -95,9 +97,8 @@ public class UserServiceImpl implements UserService {
         if (sendActivation) {
             String activationCode = RandomUtil.getRandomNumberString();
             user.setActivationCode(activationCode);
-            user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
             userRepository.save(user);
-            //twilioService.sendVerificationMessage(user, activationCode);
+            twilioService.sendVerificationMessage(user, activationCode);
             return user;
         }
         user.setActive(true);
