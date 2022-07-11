@@ -1,8 +1,6 @@
 package com.farmtrade.services.interfaces;
 
-import com.farmtrade.dto.ActivationCodeDto;
-import com.farmtrade.dto.UserCreateDto;
-import com.farmtrade.dto.UserUpdateDto;
+import com.farmtrade.dto.*;
 import com.farmtrade.entities.User;
 import com.farmtrade.exceptions.ApiValidationException;
 import org.springframework.data.domain.Page;
@@ -30,4 +28,5 @@ public interface UserService  {
 
      void userActivation(ActivationCodeDto activationCode);
 
+     TokenDto login(AuthenticationDto authenticationDto);
 }
