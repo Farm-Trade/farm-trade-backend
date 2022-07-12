@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.*;
+import java.math.BigDecimal;
+import java.util.List;
 
 @AllArgsConstructor
 public abstract class BaseSpecification<T> implements Specification<T> {
@@ -12,30 +14,21 @@ public abstract class BaseSpecification<T> implements Specification<T> {
 
     @Override
     public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
-        if (criteria.getValue().equals("")) {
+        Object value = criteria.getValue();
+        if (value == null || (value.getClass().equals(String.class)  && value.equals(""))) {
             return null;
         }
 
+        Path<String> key = root.get(criteria.getKey());
         switch (criteria.getType()) {
             case EQUAL -> {
-                return buildEqual(root, builder);
+                return builder.equal(key,  criteria.getValue());
             }
             case CONTAIN -> {
-                return builder.like(root.get(criteria.getKey()), "%" + criteria.getValue() + "%");
+                return builder.like(key, "%" + criteria.getValue() + "%");
             }
             case BETWEEN -> {
-                String[] range = ((String) criteria.getValue()).split(",");
-                String from = range.length == 1 && !range[0].equals("null") ? range[0] : null;
-                String to = range.length == 2 && !range[1].equals("null") ? range[1] : null;
-
-                if (from != null && to != null) {
-                    return buildBetween(root, builder, from, to);
-                } else if (from != null) {
-                    return buildGreaterThanOrEqualTo(root, builder, from);
-                } else if (to != null) {
-                    return buildLessThanOrEqualTo(root, builder, to);
-                }
-                return null;
+                return buildBetween(root, builder);
             }
             default -> {
                 return null;
@@ -43,19 +36,22 @@ public abstract class BaseSpecification<T> implements Specification<T> {
         }
     }
 
-    protected Predicate buildEqual(Root<T> root, CriteriaBuilder builder) {
-        return builder.equal(root.get(criteria.getKey()),  criteria.getValue());
-    }
+    protected Predicate buildBetween(Root<T> root, CriteriaBuilder builder) {
+        return buildBigDecimalBetween(root, builder);
+    };
 
-    protected Predicate buildBetween(Root<T> root, CriteriaBuilder builder, String from, String to) {
-        return builder.between(root.get(criteria.getKey()),  from, to);
-    }
+    protected Predicate buildBigDecimalBetween(Root<T> root, CriteriaBuilder builder) {
+        List<BigDecimal> range = (List<BigDecimal>) criteria.getValue();
+        BigDecimal from = range.size() == 1 ? range.get(0) : null;
+        BigDecimal to = range.size() == 2 ? range.get(1) : null;
 
-    protected Predicate buildGreaterThanOrEqualTo(Root<T> root, CriteriaBuilder builder, String from) {
-        return builder.greaterThanOrEqualTo(root.get(criteria.getKey()),  from);
-    }
-
-    protected Predicate buildLessThanOrEqualTo(Root<T> root, CriteriaBuilder builder, String to) {
-        return builder.lessThanOrEqualTo(root.get(criteria.getKey()),  to);
+        if (from != null && to != null) {
+            return builder.between(root.get(criteria.getKey()), from, to);
+        } else if (from != null) {
+            return builder.greaterThanOrEqualTo(root.get(criteria.getKey()), from);
+        } else if (to != null) {
+            return builder.lessThanOrEqualTo(root.get(criteria.getKey()), to);
+        }
+        return null;
     }
 }
