@@ -16,6 +16,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.activation.UnsupportedDataTypeException;
+import java.math.BigDecimal;
+import java.util.List;
+
 @RestController
 @RequestMapping("products")
 public class ProductController {
@@ -31,12 +35,12 @@ public class ProductController {
     @GetMapping
     public Page<Product> findPage(
             @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable,
-            @RequestParam(value = "quantity", defaultValue = "") String quantity,
-            @RequestParam(value = "reservedQuantity", defaultValue = "") String reservedQuantity,
-            @RequestParam(value = "size", defaultValue = "") String size,
-            @RequestParam(value = "productName", defaultValue = "") String productName,
-            @RequestParam(value = "owner", defaultValue = "") String owner
-    ) {
+            @RequestParam(value = "quantity", required = false) List<BigDecimal> quantity,
+            @RequestParam(value = "reservedQuantity", required = false) List<BigDecimal> reservedQuantity,
+            @RequestParam(value = "size", required = false) List<BigDecimal> size,
+            @RequestParam(value = "productName", required = false) Long productName,
+            @RequestParam(value = "owner", required = false) Long owner
+    ) throws UnsupportedDataTypeException {
         Specification<Product> specification = new ProductSpecificationsBuilder(
                 quantity,
                 reservedQuantity,

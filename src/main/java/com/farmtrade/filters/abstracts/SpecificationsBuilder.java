@@ -4,6 +4,7 @@ import com.farmtrade.filters.SearchCriteria;
 import com.farmtrade.filters.FilterType;
 import org.springframework.data.jpa.domain.Specification;
 
+import javax.activation.UnsupportedDataTypeException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,8 +18,8 @@ public abstract class SpecificationsBuilder<T, S extends Specification> {
 
     protected abstract S specificationFactory(SearchCriteria criteria);
 
-    public SpecificationsBuilder with(String key, FilterType operation, Object value) {
-        params.add(new SearchCriteria(key, operation, value));
+    public SpecificationsBuilder with(String key, FilterType operation, Object value) throws UnsupportedDataTypeException {
+        params.add(SearchCriteria.searchCriteriaFactory(key, operation, value));
         return this;
     }
 

@@ -6,15 +6,19 @@ import com.farmtrade.filters.FilterType;
 import com.farmtrade.filters.abstracts.SpecificationsBuilder;
 import com.farmtrade.filters.specifications.ProductSpecification;
 
+import javax.activation.UnsupportedDataTypeException;
+import java.math.BigDecimal;
+import java.util.List;
+
 public class ProductSpecificationsBuilder extends SpecificationsBuilder<Product, ProductSpecification> {
 
     public ProductSpecificationsBuilder(
-            String quantity,
-            String reservedQuantity,
-            String size,
-            String productName,
-            String owner
-    ) {
+            List<BigDecimal> quantity,
+            List<BigDecimal> reservedQuantity,
+            List<BigDecimal> size,
+            Long productName,
+            Long owner
+    ) throws UnsupportedDataTypeException {
         super();
         this.with("quantity", FilterType.BETWEEN, quantity)
                 .with("reservedQuantity", FilterType.BETWEEN, reservedQuantity)
