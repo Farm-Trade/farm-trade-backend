@@ -1,6 +1,5 @@
 package com.farmtrade.controllers;
 
-import com.farmtrade.aspects.anotations.JwtAuthenticationPrincipal;
 import com.farmtrade.dto.product.CreateProductDto;
 import com.farmtrade.dto.product.UpdateProductDto;
 import com.farmtrade.entities.Product;
