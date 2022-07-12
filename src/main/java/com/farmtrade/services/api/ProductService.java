@@ -5,7 +5,9 @@ import com.farmtrade.dto.product.UpdateProductDto;
 import com.farmtrade.entities.Product;
 import com.farmtrade.entities.ProductName;
 import com.farmtrade.entities.User;
+import com.farmtrade.entities.enums.Role;
 import com.farmtrade.exceptions.BadRequestException;
+import com.farmtrade.exceptions.ForbiddenException;
 import com.farmtrade.repositories.ProductRepository;
 import com.farmtrade.services.abstracts.BaseCrudService;
 import com.farmtrade.services.upload.FileStorageService;
@@ -34,6 +36,11 @@ public class ProductService extends BaseCrudService<Product, Long, UpdateProduct
     }
 
     public Product create(CreateProductDto entity, User user) {
+        Role userRole = user.getRole();
+        if (!userRole.equals(Role.FARMER)) {
+            throw new ForbiddenException(String.format("User with role %s cannot perform this cation", userRole));
+        }
+
         ProductName productName = productNameService.findOne(entity.getProductName());
 
         if (!productName.isApproved()) {

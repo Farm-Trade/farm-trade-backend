@@ -7,28 +7,25 @@ import com.farmtrade.entities.Product;
 import com.farmtrade.entities.User;
 import com.farmtrade.filters.builders.ProductSpecificationsBuilder;
 import com.farmtrade.services.api.ProductService;
-import com.farmtrade.services.interfaces.UserService;
+import com.farmtrade.services.interfaces.AuthService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("products")
 public class ProductController {
     private final ProductService productService;
-    private final UserService userService;
+    private final AuthService authService;
 
-    public ProductController(ProductService productService, UserService userService) {
+    public ProductController(ProductService productService, AuthService authService) {
         this.productService = productService;
-        this.userService = userService;
+        this.authService = authService;
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -59,8 +56,9 @@ public class ProductController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public Product create(@JwtAuthenticationPrincipal User user, @RequestBody CreateProductDto product) {
-        return productService.create(product, null);
+    public Product create(@RequestBody CreateProductDto product) {
+        User user = authService.getUserFromContext();
+        return productService.create(product, user);
     }
 
     @ResponseStatus(HttpStatus.OK)
