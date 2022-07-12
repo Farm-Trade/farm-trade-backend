@@ -33,7 +33,7 @@ public class ProductService extends BaseCrudService<Product, Long, UpdateProduct
         return Product.class;
     }
 
-    public Product create(CreateProductDto entity) {
+    public Product create(CreateProductDto entity, User user) {
         ProductName productName = productNameService.findOne(entity.getProductName());
 
         if (!productName.isApproved()) {
@@ -44,7 +44,7 @@ public class ProductService extends BaseCrudService<Product, Long, UpdateProduct
         }
 
         Product product = Product.builder()
-                // TODO Add after user system added .owner(user)
+                .owner(user)
                 .quantity(entity.getQuantity())
                 .size(entity.getSize())
                 .productName(productName)
