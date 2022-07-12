@@ -1,4 +1,4 @@
-package com.farmtrade.security;
+package com.farmtrade.services.security;
 
 import com.farmtrade.entities.User;
 import com.farmtrade.repositories.UserRepository;
@@ -20,7 +20,8 @@ public class JwtUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String phone) throws UsernameNotFoundException {
-        User user = userRepository.findByPhone(phone);
+        User user = userRepository.findByPhone(phone)
+                .orElseThrow(() -> new UsernameNotFoundException("User does not exist for the phone: " + phone));
 
         JwtUser jwtUser = JwtUserFactory.create(user);
 

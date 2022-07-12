@@ -3,9 +3,10 @@ package com.farmtrade.controllers;
 import com.farmtrade.dto.product.CreateProductDto;
 import com.farmtrade.dto.product.UpdateProductDto;
 import com.farmtrade.entities.Product;
+import com.farmtrade.entities.User;
 import com.farmtrade.filters.builders.ProductSpecificationsBuilder;
-import com.farmtrade.filters.specifications.ProductSpecification;
 import com.farmtrade.services.api.ProductService;
+import com.farmtrade.services.interfaces.AuthService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -15,15 +16,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Map;
-
 @RestController
 @RequestMapping("products")
 public class ProductController {
     private final ProductService productService;
+    private final AuthService authService;
 
-    public ProductController(ProductService productService) {
+    public ProductController(ProductService productService, AuthService authService) {
         this.productService = productService;
+        this.authService = authService;
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -55,7 +56,8 @@ public class ProductController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public Product create(@RequestBody CreateProductDto product) {
-        return productService.create(product);
+        User user = authService.getUserFromContext();
+        return productService.create(product, user);
     }
 
     @ResponseStatus(HttpStatus.OK)

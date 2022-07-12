@@ -58,7 +58,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUserByPhone(String phone) {
-        return userRepository.findByPhone(phone);
+        return userRepository.findByPhone(phone)
+                .orElseThrow(() -> new UsernameNotFoundException("User does not exist for the phone: " + phone));
     }
 
     @Override
@@ -133,10 +134,8 @@ public class UserServiceImpl implements UserService {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(phone, authenticationDto.getPassword()));
 
-            User user = userRepository.findByPhone(phone);
-            if(user == null){
-                throw new UsernameNotFoundException("User with such phone is not found");
-            }
+            User user = userRepository.findByPhone(phone)
+                    .orElseThrow(() -> new UsernameNotFoundException("User does not exist for the phone: " + phone));
             List<Role> list = new ArrayList<>();
             list.add(user.getRole())  ;
             String token = jwtTokenProvider.createToken(phone, list);
