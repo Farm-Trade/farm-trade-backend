@@ -21,7 +21,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
-@RequestMapping("products")
+@RequestMapping("api/products")
 public class ProductController {
     private final ProductService productService;
     private final AuthService authService;
@@ -77,7 +77,7 @@ public class ProductController {
     }
 
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/{id}/updateImage")
+    @PostMapping("/{id}/update-image")
     public Product updateImage(@PathVariable Long id, @RequestParam("img") MultipartFile img) {
         return productService.updateImage(id, img);
     }
