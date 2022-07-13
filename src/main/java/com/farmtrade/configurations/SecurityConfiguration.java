@@ -17,15 +17,21 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 @Configuration
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private static final String[] URLS_FOR_SWAGGER = {
-            "/index.jsp",
-            "/swagger-ui.html",
+            "/swagger-ui/**",
+            "/javainuse-openapi/**",
             "/webjars/**",
             "/configuration/**",
             "/swagger-resources",
             "/swagger-resources/configuration/*",
-            "/v2/api-docs",
+            "/v3/api-docs/**",
             "/images/**",
-            "/error"
+            "/error",
+    };
+    private static final String[] UNSECURE_URLS = {
+            "/api/login",
+            "/api/users/registration",
+            "/api/users/activate",
+            "/api/status"
     };
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -48,7 +54,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/api/login", "/api/users/registration", "/api/users/activate").permitAll()
+                .antMatchers(UNSECURE_URLS).permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .apply(new JwtConfiguration(jwtTokenProvider));

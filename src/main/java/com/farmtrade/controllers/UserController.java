@@ -5,7 +5,10 @@ import com.farmtrade.dto.UserCreateDto;
 import com.farmtrade.dto.UserUpdateDto;
 import com.farmtrade.entities.User;
 import com.farmtrade.services.interfaces.UserService;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -13,11 +16,15 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import static com.farmtrade.constants.SwaggerConstants.SECURITY_SCHEME_NAME;
+
 @RestController
 @RequestMapping("/api/users")
+@Tag(name = "User Controller", description = "The User API")
 public class UserController {
 
     final private UserService userService;
+
     public UserController(UserService userService) {
         this.userService = userService;
     }
@@ -25,48 +32,54 @@ public class UserController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
-    public Page<User> findPage(@PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable){
+    @Operation(summary = "Get user page", security = @SecurityRequirement(name = SECURITY_SCHEME_NAME))
+    public Page<User> findPage(@ParameterObject @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
         return userService.findPage(pageable);
     }
 
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{id}")
-    public User getUser(@PathVariable("id") Long id){
+    @Operation(summary = "Get user", security = @SecurityRequirement(name = SECURITY_SCHEME_NAME))
+    public User getUser(@PathVariable("id") Long id) {
         return userService.getUser(id);
     }
 
 
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/{id}")
-    public User editUser(@PathVariable("id") Long id, @RequestBody UserUpdateDto userUpdateDto){
+    @Operation(summary = "Edit user", security = @SecurityRequirement(name = SECURITY_SCHEME_NAME))
+    public User editUser(@PathVariable("id") Long id, @RequestBody UserUpdateDto userUpdateDto) {
         return userService.updateUser(id, userUpdateDto);
     }
 
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public User createUser(@RequestBody UserCreateDto userCreateDto)
-    {
+    @Operation(summary = "Create user", security = @SecurityRequirement(name = SECURITY_SCHEME_NAME))
+    public User createUser(@RequestBody UserCreateDto userCreateDto) {
         return userService.createUser(userCreateDto);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
-    public void deleteUser(@PathVariable  Long id){
+    @Operation(summary = "Delete user", security = @SecurityRequirement(name = SECURITY_SCHEME_NAME))
+    public void deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
     }
 
 
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/registration")
-    public User registration(@RequestBody UserCreateDto user){
+    @Operation(summary = "Register user")
+    public User registration(@RequestBody UserCreateDto user) {
         return userService.registration(user);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PutMapping("/activate")
-    public void userActivation(@RequestBody ActivationCodeDto activationCode){
+    @Operation(summary = "Activate user")
+    public void userActivation(@RequestBody ActivationCodeDto activationCode) {
 
         userService.userActivation(activationCode);
     }
