@@ -17,7 +17,7 @@ public class FileController {
         this.fileStorageService = fileStorageService;
     }
 
-    @GetMapping("/img/{imgName:.+}")
+    @GetMapping("/api/img/{imgName:.+}")
     public ResponseEntity<Resource> getImage(@PathVariable String imgName, HttpServletRequest request) {
         return fileStorageService.serveImage(imgName, request);
     }

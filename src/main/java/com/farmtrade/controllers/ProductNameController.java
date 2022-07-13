@@ -14,7 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("productNames")
+@RequestMapping("api/product-names")
 public class ProductNameController {
     private final ProductNameService productNameService;
 
@@ -61,7 +61,7 @@ public class ProductNameController {
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @PutMapping("/{id}/updateRequestPermission/{role}")
+    @PutMapping("/{id}/update-request-permission/{role}")
     public ProductName updateRequestPermission(@PathVariable Long id, @PathVariable Role role) throws ApiValidationException {
         return productNameService.updateRequestPermission(id, role);
     }
