@@ -3,6 +3,8 @@ package com.farmtrade.dto;
 
 import com.farmtrade.entities.enums.Role;
 
+import javax.validation.constraints.NotNull;
+
 public class UserCreateDto {
     public UserCreateDto(String fullName, String phone, String email, String password, Role role) {
         this.fullName = fullName;
@@ -14,7 +16,7 @@ public class UserCreateDto {
     public UserCreateDto() {
 
     }
-
+    @NotNull
     private String fullName;
     private String phone;
     private String email;

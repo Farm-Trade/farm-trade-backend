@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
 import java.util.Set;
 
@@ -30,6 +31,7 @@ public class User  {
     @CreationTimestamp
     private Timestamp createdAt;
     @Column(unique = true)
+    @NotNull
     private String phone;
     @Column(unique = true)
     private String email;
