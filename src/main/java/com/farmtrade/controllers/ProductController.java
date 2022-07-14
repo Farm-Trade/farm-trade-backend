@@ -1,5 +1,6 @@
 package com.farmtrade.controllers;
 
+import com.farmtrade.dto.ImageDto;
 import com.farmtrade.dto.product.CreateProductDto;
 import com.farmtrade.dto.product.UpdateProductDto;
 import com.farmtrade.entities.Product;
@@ -19,6 +20,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.ClientRequest;
@@ -93,19 +95,19 @@ public class ProductController {
     }
 
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/{id}/update-image")
-    // TODO add file loader
-//    @Operation(
-//            summary = "Update product's image",
-//            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-//            description = "ClientRequest body.",
-//            content = @Content(
-//                    mediaType = "multipart/form-data",
-//                    schema = @Schema(implementation = MultipartFile.class)
-//            ),
-//            required = true
-//    )
-//    )
+    @RequestMapping(path = "/{id}/update-image", method = RequestMethod.POST, produces = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(
+            summary = "Update product's image",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "ImageDto body.",
+                    content = @Content(
+                            mediaType = MediaType.MULTIPART_FORM_DATA_VALUE,
+                            schema = @Schema(implementation = ImageDto.class)
+                    ),
+
+                    required = true
+            )
+    )
     public Product updateImage(@PathVariable Long id, @RequestParam("img") MultipartFile img) {
         return productService.updateImage(id, img);
     }

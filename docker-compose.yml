@@ -14,7 +14,7 @@ services:
   backend:
     image: ghcr.io/farm-trade/farm-trade-backend
     ports:
-      - "8000:8080"
+      - "8000:8000"
     depends_on:
       - db
     environment:
@@ -23,6 +23,7 @@ services:
       - DB_PASSWORD=farmtrade
       - DB_HOST=host.docker.internal
       - DB_PORT=5432
+      - PORT=8000
       - TWILIO_SID=AC2efae4bfa510c1ba458969bafdabba96
       - TWILIO_TOKEN=0ddacae69cbe4efafb15613b264b8404
       - TWILIO_NUMBER=+19108125369
