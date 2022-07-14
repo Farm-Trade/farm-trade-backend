@@ -4,3 +4,5 @@
 - pull-request-check: Run tests, create docker image after creating pull request into `develp` image location `ghcr.io/farm-trade/farm-trade-backend:${sha}`
 ### App starting from test side
 Execute `./scripts/docker-login.sh` enter token and username then run `docker-compose up -d`
+### Swagger
+<domain>/swagger-ui.html

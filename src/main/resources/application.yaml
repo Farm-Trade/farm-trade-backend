@@ -31,6 +31,9 @@ spring:
       max-file-size: 200MB
       max-request-size: 215MB
 
+server:
+  port : ${PORT:8080}
+
 twilio:
   accountSid: ${TWILIO_SID:AC2efae4bfa510c1ba458969bafdabba96}
   authToken: ${TWILIO_TOKEN:a81853ab12b41fefa88db75c6db4d9a2}
