@@ -44,12 +44,11 @@ public class ProductNameController {
             @ParameterObject @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable,
             @RequestParam(required = false) String name,
             @RequestParam(required = false) ProductType type,
-            @RequestParam(required = false) boolean approved,
-            @RequestParam(required = false) Role createRequestPermission,
-            @RequestParam(required = false) List<Product> products
+            @RequestParam(required = false, defaultValue = "true") boolean approved,
+            @RequestParam(required = false) Role createRequestPermission
     ) throws UnsupportedDataTypeException {
         Specification<ProductName> specification =
-                new ProductNameSpecificationsBuilder(name, type, approved, createRequestPermission, products).build();
+                new ProductNameSpecificationsBuilder(name, type, approved, createRequestPermission).build();
         return productNameService.findPage(specification, pageable);
     }
 

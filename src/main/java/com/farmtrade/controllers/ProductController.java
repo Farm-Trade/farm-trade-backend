@@ -55,8 +55,13 @@ public class ProductController {
             @RequestParam(required = false) Long productName,
             @RequestParam(required = false) Long owner
     ) throws UnsupportedDataTypeException {
-        Specification<Product> specification =
-                new ProductSpecificationsBuilder(quantity, reservedQuantity, size, productName, owner).build();
+        Specification<Product> specification = new ProductSpecificationsBuilder(
+                quantity,
+                reservedQuantity,
+                size,
+                productName,
+                owner
+        ).build();
         return productService.findPage(specification, pageable);
     }
 

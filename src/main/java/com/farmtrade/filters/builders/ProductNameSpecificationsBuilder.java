@@ -21,15 +21,13 @@ public class ProductNameSpecificationsBuilder extends SpecificationsBuilder<Prod
             String name,
             ProductType type,
             boolean approved,
-            Role createRequestPermission,
-            List<Product> products
+            Role createRequestPermission
     ) throws UnsupportedDataTypeException {
         super();
         this.with("name", FilterType.CONTAIN, name)
                 .with("type", FilterType.EQUAL, type)
                 .with("approved", FilterType.EQUAL, approved)
-                .with("createRequestPermission", FilterType.EQUAL, createRequestPermission)
-                .with("products", FilterType.EQUAL, products);
+                .with("createRequestPermission", FilterType.EQUAL, createRequestPermission);
     }
 
     @Override
