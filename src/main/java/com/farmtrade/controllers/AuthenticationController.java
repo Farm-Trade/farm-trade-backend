@@ -4,9 +4,14 @@ import com.farmtrade.dto.AuthenticationDto;
 import com.farmtrade.dto.TokenDto;
 import com.farmtrade.entities.User;
 import com.farmtrade.entities.enums.Role;
+import com.farmtrade.repositories.UserRepository;
 import com.farmtrade.security.jwt.JwtTokenProvider;
 import com.farmtrade.services.interfaces.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -14,18 +19,13 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 public class AuthenticationController {
+
     final private UserService userService;
     public AuthenticationController(UserService userService) {
         this.userService = userService;
