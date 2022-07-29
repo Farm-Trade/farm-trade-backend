@@ -49,11 +49,11 @@ public class ProductController {
     @Operation(summary = "Get products page")
     public Page<Product> findPage(
             @ParameterObject @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable,
-            @RequestParam(value = "quantity", required = false) List<BigDecimal> quantity,
-            @RequestParam(value = "reservedQuantity", required = false) List<BigDecimal> reservedQuantity,
-            @RequestParam(value = "size", required = false) List<BigDecimal> size,
-            @RequestParam(value = "productName", required = false) Long productName,
-            @RequestParam(value = "owner", required = false) Long owner
+            @RequestParam(required = false) List<BigDecimal> quantity,
+            @RequestParam(required = false) List<BigDecimal> reservedQuantity,
+            @RequestParam(required = false) List<BigDecimal> size,
+            @RequestParam(required = false) Long productName,
+            @RequestParam(required = false) Long owner
     ) throws UnsupportedDataTypeException {
         Specification<Product> specification = new ProductSpecificationsBuilder(
                 quantity,

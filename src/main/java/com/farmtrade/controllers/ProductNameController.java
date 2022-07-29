@@ -2,9 +2,12 @@ package com.farmtrade.controllers;
 
 import com.farmtrade.dto.producnames.ApproveProductNameDto;
 import com.farmtrade.dto.producnames.ProductNameCreateUpdateDto;
+import com.farmtrade.entities.Product;
 import com.farmtrade.entities.ProductName;
+import com.farmtrade.entities.enums.ProductType;
 import com.farmtrade.entities.enums.Role;
 import com.farmtrade.exceptions.ApiValidationException;
+import com.farmtrade.filters.builders.ProductNameSpecificationsBuilder;
 import com.farmtrade.services.api.ProductNameService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -13,9 +16,13 @@ import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import javax.activation.UnsupportedDataTypeException;
+import java.util.List;
 
 import static com.farmtrade.constants.SwaggerConstants.SECURITY_SCHEME_NAME;
 
@@ -34,9 +41,15 @@ public class ProductNameController {
     @GetMapping
     @Operation(summary = "Get product names page")
     public Page<ProductName> findAll(
-            @ParameterObject @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable
-    ) {
-        return productNameService.findPage(pageable);
+            @ParameterObject @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) ProductType type,
+            @RequestParam(required = false, defaultValue = "true") boolean approved,
+            @RequestParam(required = false) Role createRequestPermission
+    ) throws UnsupportedDataTypeException {
+        Specification<ProductName> specification =
+                new ProductNameSpecificationsBuilder(name, type, approved, createRequestPermission).build();
+        return productNameService.findPage(specification, pageable);
     }
 
     @ResponseStatus(HttpStatus.OK)
