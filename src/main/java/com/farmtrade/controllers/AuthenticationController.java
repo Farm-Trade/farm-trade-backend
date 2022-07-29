@@ -2,7 +2,7 @@ package com.farmtrade.controllers;
 
 import com.farmtrade.dto.AuthenticationDto;
 import com.farmtrade.dto.TokenDto;
-import com.farmtrade.services.interfaces.UserService;
+import com.farmtrade.services.impl.api.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.PostMapping;

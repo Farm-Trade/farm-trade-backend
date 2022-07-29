@@ -1,9 +1,8 @@
 package com.farmtrade.controllers;
 
 import com.farmtrade.services.upload.FileStorageService;
+import com.farmtrade.services.upload.FileStorageServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.core.io.Resource;

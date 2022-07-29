@@ -1,9 +1,9 @@
-package com.farmtrade.services.security;
+package com.farmtrade.services.impl.security;
 
 import com.farmtrade.entities.User;
 import com.farmtrade.exceptions.UnauthorizedException;
 import com.farmtrade.repositories.UserRepository;
-import com.farmtrade.services.interfaces.AuthService;
+import com.farmtrade.services.security.AuthService;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

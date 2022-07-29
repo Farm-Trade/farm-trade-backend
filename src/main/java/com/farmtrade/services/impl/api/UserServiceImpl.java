@@ -1,4 +1,4 @@
-package com.farmtrade.services.impl;
+package com.farmtrade.services.impl.api;
 
 import com.farmtrade.dto.*;
 import com.farmtrade.entities.User;
@@ -7,7 +7,6 @@ import com.farmtrade.exceptions.ApiValidationException;
 import com.farmtrade.exceptions.EntityNotFoundException;
 import com.farmtrade.repositories.UserRepository;
 import com.farmtrade.security.jwt.JwtTokenProvider;
-import com.farmtrade.services.interfaces.UserService;
 import com.farmtrade.services.smpp.TwilioService;
 import com.farmtrade.utils.RandomUtil;
 import org.springframework.beans.BeanUtils;

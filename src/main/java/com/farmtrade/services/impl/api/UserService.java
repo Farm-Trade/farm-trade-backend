@@ -1,4 +1,4 @@
-package com.farmtrade.services.interfaces;
+package com.farmtrade.services.impl.api;
 
 import com.farmtrade.dto.*;
 import com.farmtrade.entities.User;

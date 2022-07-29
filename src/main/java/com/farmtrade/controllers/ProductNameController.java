@@ -2,7 +2,6 @@ package com.farmtrade.controllers;
 
 import com.farmtrade.dto.producnames.ApproveProductNameDto;
 import com.farmtrade.dto.producnames.ProductNameCreateUpdateDto;
-import com.farmtrade.entities.Product;
 import com.farmtrade.entities.ProductName;
 import com.farmtrade.entities.enums.ProductType;
 import com.farmtrade.entities.enums.Role;
@@ -22,7 +21,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.activation.UnsupportedDataTypeException;
-import java.util.List;
 
 import static com.farmtrade.constants.SwaggerConstants.SECURITY_SCHEME_NAME;
 

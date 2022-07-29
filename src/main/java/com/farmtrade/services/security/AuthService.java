@@ -1,4 +1,4 @@
-package com.farmtrade.services.interfaces;
+package com.farmtrade.services.security;
 
 import com.farmtrade.entities.User;
 
