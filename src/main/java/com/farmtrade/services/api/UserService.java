@@ -1,4 +1,4 @@
-package com.farmtrade.services.impl.api;
+package com.farmtrade.services.api;
 
 import com.farmtrade.dto.*;
 import com.farmtrade.dto.recovering.ForgotPasswordDto;

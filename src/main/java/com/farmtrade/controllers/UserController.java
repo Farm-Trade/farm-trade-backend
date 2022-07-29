@@ -5,7 +5,7 @@ import com.farmtrade.dto.UserCreateDto;
 import com.farmtrade.dto.UserUpdateDto;
 import com.farmtrade.entities.User;
 import com.farmtrade.exceptions.EntityNotFoundException;
-import com.farmtrade.services.impl.api.UserService;
+import com.farmtrade.services.api.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;

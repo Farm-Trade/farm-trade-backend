@@ -11,9 +11,9 @@ import com.farmtrade.exceptions.EntityNotFoundException;
 import com.farmtrade.exceptions.UserNotActiveException;
 import com.farmtrade.repositories.UserRepository;
 import com.farmtrade.security.jwt.JwtTokenProvider;
+import com.farmtrade.services.api.UserService;
 import com.farmtrade.services.smpp.TwilioService;
 import com.farmtrade.utils.RandomUtil;
-import org.hibernate.action.internal.EntityActionVetoException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -147,8 +147,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void forgotPassword(ForgotPasswordDto forgotPasswordDto) throws UserNotActiveException, EntityNotFoundException {
-        String phone = forgotPasswordDto.getPhone();
-        User user = getUserByPhone(phone);
+        User user = getUserByPhone(forgotPasswordDto.getPhone());
 
         if (!user.isActive()) {
             throw new UserNotActiveException();
@@ -167,8 +166,9 @@ public class UserServiceImpl implements UserService {
     public User resetPassword(Long id, ResetPasswordDto resetPasswordDto) throws UserNotActiveException, EntityNotFoundException, BadRequestException{
         User user = getUser(id);
         String activationCode = resetPasswordDto.getActivationCode();
+        String activationCodeFromDB = user.getActivationCode();
 
-        if (user.getActivationCode().equals(activationCode)) {
+        if (activationCodeFromDB == null || !activationCodeFromDB.equals(activationCode)) {
             throw new BadRequestException(String.format("User is not match to %s activation code", activationCode));
         }
         if (!user.isActive()) {

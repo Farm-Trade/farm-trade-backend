@@ -8,7 +8,7 @@ import com.farmtrade.entities.User;
 import com.farmtrade.exceptions.BadRequestException;
 import com.farmtrade.exceptions.EntityNotFoundException;
 import com.farmtrade.exceptions.UserNotActiveException;
-import com.farmtrade.services.impl.api.UserService;
+import com.farmtrade.services.api.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
