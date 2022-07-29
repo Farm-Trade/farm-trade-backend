@@ -1,14 +1,19 @@
 package com.farmtrade.services.impl.api;
 
 import com.farmtrade.dto.*;
+import com.farmtrade.dto.recovering.ForgotPasswordDto;
+import com.farmtrade.dto.recovering.ResetPasswordDto;
 import com.farmtrade.entities.User;
 import com.farmtrade.entities.enums.Role;
 import com.farmtrade.exceptions.ApiValidationException;
+import com.farmtrade.exceptions.BadRequestException;
 import com.farmtrade.exceptions.EntityNotFoundException;
+import com.farmtrade.exceptions.UserNotActiveException;
 import com.farmtrade.repositories.UserRepository;
 import com.farmtrade.security.jwt.JwtTokenProvider;
 import com.farmtrade.services.smpp.TwilioService;
 import com.farmtrade.utils.RandomUtil;
+import org.hibernate.action.internal.EntityActionVetoException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -56,7 +61,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUserByPhone(String phone) {
+    public User getUserByPhone(String phone) throws UsernameNotFoundException {
         return userRepository.findByPhone(phone)
                 .orElseThrow(() -> new UsernameNotFoundException("User does not exist for the phone: " + phone));
     }
@@ -107,10 +112,7 @@ public class UserServiceImpl implements UserService {
                 .build();
 
         if (sendActivation) {
-            String activationCode = RandomUtil.getRandomNumberString();
-            user.setActivationCode(activationCode);
-            userRepository.save(user);
-            twilioService.sendVerificationMessage(user, activationCode);
+            sendActivationCode(user);
             return user;
         }
         user.setActive(true);
@@ -118,23 +120,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void userActivation(ActivationCodeDto activationCode) {
-        User user = userRepository.findByActivationCode(activationCode.getActivationCode())
-                .orElseThrow(() -> new ApiValidationException("User is not found"));
+    public void userActivation(ActivationCodeDto activationCode) throws EntityNotFoundException{
+        User user = getUserByActivationCode(activationCode.getActivationCode());
         user.setActive(true);
         user.setActivationCode(null);
         userRepository.save(user);
     }
 
     @Override
-    public TokenDto login(AuthenticationDto authenticationDto){
+    public TokenDto login(AuthenticationDto authenticationDto) throws UsernameNotFoundException{
         try{
             String phone = authenticationDto.getPhone();
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(phone, authenticationDto.getPassword()));
 
-            User user = userRepository.findByPhone(phone)
-                    .orElseThrow(() -> new UsernameNotFoundException("User does not exist for the phone: " + phone));
+            User user = getUserByPhone(phone);
             List<Role> list = new ArrayList<>();
             list.add(user.getRole())  ;
             String token = jwtTokenProvider.createToken(phone, list);
@@ -143,7 +143,50 @@ public class UserServiceImpl implements UserService {
             throw new BadCredentialsException("Invalid Phone or password");
         }
     }
+
+    @Override
+    @Transactional
+    public void forgotPassword(ForgotPasswordDto forgotPasswordDto) throws UserNotActiveException, EntityNotFoundException {
+        String phone = forgotPasswordDto.getPhone();
+        User user = getUserByPhone(phone);
+
+        if (!user.isActive()) {
+            throw new UserNotActiveException();
+        }
+
+        sendActivationCode(user);
     }
+
+    @Override
+    public User getUserByActivationCode(String activationCode) throws UserNotActiveException{
+        return userRepository.findByActivationCode(activationCode)
+                .orElseThrow(() -> new EntityNotFoundException(User.class, "activation code", activationCode));
+    }
+
+    @Override
+    public User resetPassword(Long id, ResetPasswordDto resetPasswordDto) throws UserNotActiveException, EntityNotFoundException, BadRequestException{
+        User user = getUser(id);
+        String activationCode = resetPasswordDto.getActivationCode();
+
+        if (user.getActivationCode().equals(activationCode)) {
+            throw new BadRequestException(String.format("User is not match to %s activation code", activationCode));
+        }
+        if (!user.isActive()) {
+            throw new UserNotActiveException();
+        }
+        user.setActivationCode(null);
+        user.setPassword(bCryptPasswordEncoder.encode(resetPasswordDto.getPassword()));
+
+        return userRepository.save(user);
+    }
+
+    private void sendActivationCode(User user) {
+        String activationCode = RandomUtil.getRandomNumberString();
+        user.setActivationCode(activationCode);
+        userRepository.save(user);
+        twilioService.sendVerificationMessage(user, activationCode);
+    }
+}
 
 
 

@@ -4,6 +4,7 @@ import com.farmtrade.dto.ActivationCodeDto;
 import com.farmtrade.dto.UserCreateDto;
 import com.farmtrade.dto.UserUpdateDto;
 import com.farmtrade.entities.User;
+import com.farmtrade.exceptions.EntityNotFoundException;
 import com.farmtrade.services.impl.api.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -79,8 +80,15 @@ public class UserController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PutMapping("/activate")
     @Operation(summary = "Activate user")
-    public void userActivation(@RequestBody ActivationCodeDto activationCode) {
+    public void userActivation(@RequestBody ActivationCodeDto activationCode) throws EntityNotFoundException {
 
         userService.userActivation(activationCode);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/from-code/{activationCode}")
+    @Operation(summary = "Get user by activation code")
+    public User getUserByActivationCode(@PathVariable String activationCode) throws EntityNotFoundException {
+        return userService.getUserByActivationCode(activationCode);
     }
 }

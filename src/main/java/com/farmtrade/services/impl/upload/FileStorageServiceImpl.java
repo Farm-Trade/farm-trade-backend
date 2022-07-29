@@ -1,8 +1,9 @@
-package com.farmtrade.services.upload;
+package com.farmtrade.services.impl.upload;
 
 import com.farmtrade.exceptions.FileNotFoundException;
 import com.farmtrade.exceptions.FileStorageException;
 import com.farmtrade.properties.FileStorageProperties;
+import com.farmtrade.services.upload.FileStorageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;

@@ -12,7 +12,6 @@ import com.farmtrade.repositories.ProductRepository;
 import com.farmtrade.services.abstracts.BaseCrudService;
 import com.farmtrade.services.api.ProductService;
 import com.farmtrade.services.upload.FileStorageService;
-import com.farmtrade.services.upload.FileStorageServiceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
