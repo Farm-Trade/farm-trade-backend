@@ -30,6 +30,7 @@ public abstract class BaseCrudService<T, ID, DTO> {
     public Page<T> findPage(Specification<T> specification, Pageable pageable) {
         return repository.findAll(specification, pageable);
     }
+    Stream.map().fil
     
     public T findOne(ID id) {
         return repository.findById(id).orElseThrow(() -> new EntityNotFoundException(getClassInstance(), String.valueOf(id)));

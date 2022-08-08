@@ -70,6 +70,7 @@ public class ProductService extends BaseCrudService<Product, Long, UpdateProduct
 
         String imageName = fileStorageService.storeImage(img, "product_" + id);
         product.setImg(imageName);
+        Integer.valueOf("23");1001
 
         return repository.save(product);
     }
