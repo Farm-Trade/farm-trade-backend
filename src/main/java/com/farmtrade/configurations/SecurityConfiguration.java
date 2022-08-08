@@ -9,12 +9,30 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 
 @Configuration
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+    private static final String[] URLS_FOR_SWAGGER = {
+            "/swagger-ui/**",
+            "/javainuse-openapi/**",
+            "/webjars/**",
+            "/configuration/**",
+            "/swagger-resources",
+            "/swagger-resources/configuration/*",
+            "/v3/api-docs/**",
+            "/images/**",
+            "/error",
+    };
+    private static final String[] UNSECURE_URLS = {
+            "/api/login",
+            "/api/users/registration",
+            "/api/users/activate",
+            "/api/status"
+    };
     private final JwtTokenProvider jwtTokenProvider;
 
 
@@ -36,10 +54,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/api/login","/users/registration","/users/activate").permitAll()
+                .antMatchers(UNSECURE_URLS).permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .apply(new JwtConfiguration(jwtTokenProvider));
     }
 
+    @Override
+    public void configure(WebSecurity web) {
+        web.ignoring().antMatchers(URLS_FOR_SWAGGER);
+    }
 }
