@@ -12,10 +12,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 @Service
-public class OrderRequestService extends BaseCrudService<OrderRequest, Long, OrderRequestDto> {
+public class OrderRequestService extends BaseCrudService<OrderRequest, Long, OrderRequestDto>{
     private final UserService userService;
     private final ProductNameService productNameService;
 
@@ -43,5 +44,12 @@ public class OrderRequestService extends BaseCrudService<OrderRequest, Long, Ord
         .build();
 
         return  repository.save(order);
+    }
+
+    public OrderRequest updatePrice(Long id, BigDecimal unitCostUpdate) {
+        OrderRequest orderRequest = repository.getReferenceById(id);
+        orderRequest.setUnitPriceUpdate(unitCostUpdate);
+
+        return repository.save(orderRequest);
     }
 }

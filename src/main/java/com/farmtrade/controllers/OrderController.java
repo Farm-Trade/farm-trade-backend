@@ -56,14 +56,14 @@ public class OrderController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{id}")
-    public OrderRequest getDetailsOfOrder(){
-        return null;
+    public OrderRequest getDetailsOfOrder(@PathVariable Long id){
+        return orderRequestService.findOne(id);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/{id}")
-    public OrderRequest updateOrder(){
-        return null;
+    public OrderRequest updateOrder(@PathVariable Long id, @RequestBody OrderRequestDto orderRequestDto){
+        return orderRequestService.fullyUpdate(id, orderRequestDto);
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -74,8 +74,8 @@ public class OrderController {
 
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/{id}/raisePrice")
-    public OrderRequest updatePrice(){
-        return null;
+    public OrderRequest updatePrice(@PathVariable Long id, @RequestBody BigDecimal unitCostUpdate){
+        return orderRequestService.updatePrice(id,unitCostUpdate);
     }
 
     @ResponseStatus(HttpStatus.OK)
