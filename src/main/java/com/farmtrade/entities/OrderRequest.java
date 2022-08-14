@@ -1,6 +1,7 @@
 package com.farmtrade.entities;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +13,7 @@ import java.sql.Timestamp;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class OrderRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -28,7 +30,7 @@ public class OrderRequest {
     private Timestamp auctionEndDate;
     @ManyToOne
     private User owner;
-    private Integer batchNumber;
+    private Long batchNumber;
     private boolean completed;
 
 }

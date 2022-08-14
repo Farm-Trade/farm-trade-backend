@@ -31,5 +31,4 @@ public class Product implements Serializable {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "owner", updatable = false)
     private User owner;
-    ProductType.
 }
