@@ -7,7 +7,7 @@ import com.farmtrade.entities.Product;
 import com.farmtrade.entities.User;
 import com.farmtrade.filters.builders.ProductSpecificationsBuilder;
 import com.farmtrade.services.api.ProductService;
-import com.farmtrade.services.interfaces.AuthService;
+import com.farmtrade.services.security.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -23,7 +23,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.reactive.function.client.ClientRequest;
 
 import javax.activation.UnsupportedDataTypeException;
 import java.math.BigDecimal;
