@@ -1,15 +1,14 @@
-package com.farmtrade.dto;
+package com.farmtrade.dto.recovering;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Data
 @Builder
-public class AuthenticationDto {
+public class ForgotPasswordDto {
     private String phone;
-    private String password;
 }

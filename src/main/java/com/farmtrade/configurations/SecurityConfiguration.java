@@ -28,7 +28,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             "/error",
     };
     private static final String[] UNSECURE_URLS = {
-            "/api/login",
+            "/api/auth/login",
+            "/api/auth/forgot-password",
+            "/api/auth/reset-password/*",
+            "/api/users/from-code/*",
             "/api/users/registration",
             "/api/users/activate",
             "/api/status"

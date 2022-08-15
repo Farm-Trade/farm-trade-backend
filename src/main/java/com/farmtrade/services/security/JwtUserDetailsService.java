@@ -4,7 +4,6 @@ import com.farmtrade.entities.User;
 import com.farmtrade.repositories.UserRepository;
 import com.farmtrade.security.jwt.JwtUser;
 import com.farmtrade.security.jwt.JwtUserFactory;
-import com.farmtrade.services.interfaces.UserService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
