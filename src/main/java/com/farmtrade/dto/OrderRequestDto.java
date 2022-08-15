@@ -16,9 +16,10 @@ public class OrderRequestDto {
     private BigDecimal quantity;
     private BigDecimal size;
     private BigDecimal unitPrice;
+    private BigDecimal unitPriceUpdate;
+    private BigDecimal ultimatePrice;
+    private String notes;
     private Long productName;
     private String loadingDate;
     private String auctionEndDate;
-    private Long owner;
-    private Long batchNumber;
 }

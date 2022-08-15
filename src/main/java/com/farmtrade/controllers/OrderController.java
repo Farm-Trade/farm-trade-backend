@@ -2,17 +2,15 @@ package com.farmtrade.controllers;
 
 import com.farmtrade.dto.OrderRequestDto;
 import com.farmtrade.entities.OrderRequest;
-import com.farmtrade.entities.ProductName;
-import com.farmtrade.entities.User;
 import com.farmtrade.filters.builders.OrderSpecificationBuilder;
-import com.farmtrade.services.api.OrderRequestService;
+import com.farmtrade.services.impl.OrderRequestServiceImpl;
+import com.farmtrade.services.interfaces.OrderRequestService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.activation.UnsupportedDataTypeException;
@@ -68,7 +66,7 @@ public class OrderController {
 
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/batch")
-    public List<OrderRequest> getBatchs(){
+    public List<OrderRequest> getBatches(){
         return null;
     }
 

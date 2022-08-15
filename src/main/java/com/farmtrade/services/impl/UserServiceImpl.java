@@ -144,9 +144,7 @@ public class UserServiceImpl implements UserService {
             throw new BadCredentialsException("Invalid Phone or password");
         }
     }
-    public void nnnn (){
 
-    }
     }
 
 

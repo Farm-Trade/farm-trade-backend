@@ -1,26 +1,23 @@
-package com.farmtrade.services.api;
+package com.farmtrade.services.impl;
 
 import com.farmtrade.dto.OrderRequestDto;
 import com.farmtrade.entities.OrderRequest;
 import com.farmtrade.repositories.BaseJpaAndSpecificationRepository;
-import com.farmtrade.repositories.OrderRequestRepository;
 import com.farmtrade.services.abstracts.BaseCrudService;
-import com.farmtrade.services.impl.UserServiceImpl;
+import com.farmtrade.services.interfaces.OrderRequestService;
+import com.farmtrade.services.api.ProductNameService;
 import com.farmtrade.services.interfaces.UserService;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 @Service
-public class OrderRequestService extends BaseCrudService<OrderRequest, Long, OrderRequestDto>{
+public class OrderRequestServiceImpl extends BaseCrudService<OrderRequest, Long, OrderRequestDto> implements OrderRequestService{
     private final UserService userService;
     private final ProductNameService productNameService;
 
-    public OrderRequestService(BaseJpaAndSpecificationRepository<OrderRequest, Long> repository, UserService userService, ProductNameService productNameService) {
+    public OrderRequestServiceImpl(BaseJpaAndSpecificationRepository<OrderRequest, Long> repository, UserService userService, ProductNameService productNameService) {
         super(repository);
         this.userService = userService;
         this.productNameService = productNameService;
@@ -33,14 +30,15 @@ public class OrderRequestService extends BaseCrudService<OrderRequest, Long, Ord
 
     public OrderRequest create(OrderRequestDto orderRequestDto) {
         OrderRequest order = OrderRequest.builder()
-                .owner(userService.getUser(orderRequestDto.getOwner()))
                 .productName(productNameService.findOne(orderRequestDto.getProductName()))
                 .auctionEndDate(Timestamp.valueOf(orderRequestDto.getAuctionEndDate()))
-                .batchNumber(orderRequestDto.getBatchNumber())
                 .unitPrice(orderRequestDto.getUnitPrice())
                 .loadingDate(Timestamp.valueOf(orderRequestDto.getLoadingDate()))
                 .size(orderRequestDto.getSize())
                 .quantity(orderRequestDto.getQuantity())
+                .notes(orderRequestDto.getNotes())
+                .ultimatePrice(orderRequestDto.getUltimatePrice())
+                .unitPriceUpdate(orderRequestDto.getUnitPriceUpdate())
         .build();
 
         return  repository.save(order);
