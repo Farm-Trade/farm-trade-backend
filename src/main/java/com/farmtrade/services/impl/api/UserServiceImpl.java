@@ -18,6 +18,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -128,7 +130,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public TokenDto login(AuthenticationDto authenticationDto) throws UsernameNotFoundException{
+    public ResponseEntity login(AuthenticationDto authenticationDto) throws UsernameNotFoundException{
         try{
             String phone = authenticationDto.getPhone();
             authenticationManager.authenticate(
@@ -138,9 +140,10 @@ public class UserServiceImpl implements UserService {
             List<Role> list = new ArrayList<>();
             list.add(user.getRole())  ;
             String token = jwtTokenProvider.createToken(phone, list);
-            return new TokenDto(token);
+            return new ResponseEntity<TokenDto>(new TokenDto(token), HttpStatus.OK);
         }catch (AuthenticationException e){
-            throw new BadCredentialsException("Invalid Phone or password");
+            String messageError = "Invalid Phone or password";
+            return new ResponseEntity(messageError, HttpStatus.UNAUTHORIZED);
         }
     }
 

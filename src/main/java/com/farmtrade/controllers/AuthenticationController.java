@@ -12,6 +12,7 @@ import com.farmtrade.services.api.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,9 +26,10 @@ public class AuthenticationController {
         this.userService = userService;
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @PostMapping("/login")
     @Operation(summary = "Get auth token")
-    public TokenDto login(@RequestBody AuthenticationDto authenticationDto) {
+    public ResponseEntity login(@RequestBody AuthenticationDto authenticationDto) {
         return userService.login(authenticationDto);
     }
 
@@ -41,7 +43,7 @@ public class AuthenticationController {
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/reset-password/{id}")
     @Operation(summary = "Reset password by activation code")
-    public TokenDto resetPassword(@PathVariable Long id, @RequestBody ResetPasswordDto resetPasswordDto) throws UserNotActiveException, EntityNotFoundException, BadRequestException {
+    public ResponseEntity resetPassword(@PathVariable Long id, @RequestBody ResetPasswordDto resetPasswordDto) throws UserNotActiveException, EntityNotFoundException, BadRequestException {
         User user = userService.resetPassword(id, resetPasswordDto);
 
         AuthenticationDto authenticationDto = AuthenticationDto.builder()
