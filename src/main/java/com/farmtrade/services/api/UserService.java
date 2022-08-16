@@ -11,6 +11,7 @@ import com.farmtrade.exceptions.UserNotActiveException;
 import org.hibernate.action.internal.EntityActionVetoException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -24,7 +25,7 @@ public interface UserService  {
 
      void deleteUser(Long id);
 
-     User updateUser(Long id, @RequestBody UserUpdateDto userUpdateDto);
+     User updateUser(Long id, UserUpdateDto userUpdateDto);
 
      User getUser(Long id);
 
@@ -34,7 +35,7 @@ public interface UserService  {
 
      void userActivation(ActivationCodeDto activationCode);
 
-     TokenDto login(AuthenticationDto authenticationDto);
+     ResponseEntity login(AuthenticationDto authenticationDto);
 
      void forgotPassword(ForgotPasswordDto forgotPasswordDto) throws UserNotActiveException;
 
