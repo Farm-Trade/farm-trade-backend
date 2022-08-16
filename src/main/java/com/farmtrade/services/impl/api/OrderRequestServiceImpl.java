@@ -1,12 +1,12 @@
-package com.farmtrade.services.impl;
+package com.farmtrade.services.impl.api;
 
 import com.farmtrade.dto.OrderRequestDto;
 import com.farmtrade.entities.OrderRequest;
 import com.farmtrade.repositories.BaseJpaAndSpecificationRepository;
 import com.farmtrade.services.abstracts.BaseCrudService;
-import com.farmtrade.services.interfaces.OrderRequestService;
+import com.farmtrade.services.api.OrderRequestService;
 import com.farmtrade.services.api.ProductNameService;
-import com.farmtrade.services.interfaces.UserService;
+import com.farmtrade.services.api.UserService;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;

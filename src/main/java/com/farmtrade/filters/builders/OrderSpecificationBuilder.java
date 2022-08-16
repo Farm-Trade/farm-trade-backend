@@ -20,7 +20,6 @@ public class OrderSpecificationBuilder extends SpecificationsBuilder<OrderReques
             Timestamp loadingDate,
             Timestamp auctionEndDate,
             Long owner,
-            Long batchNumber,
             boolean completed
     ) throws UnsupportedDataTypeException {
         super();
@@ -31,7 +30,6 @@ public class OrderSpecificationBuilder extends SpecificationsBuilder<OrderReques
                 .with("loadingDate", FilterType.EQUAL, loadingDate)
                 .with("auctionEndDate", FilterType.EQUAL, auctionEndDate)
                 .with("owner", FilterType.EQUAL, owner)
-                .with("batchNumber", FilterType.EQUAL, batchNumber)
                 .with("completed", FilterType.EQUAL, completed);
 
     }

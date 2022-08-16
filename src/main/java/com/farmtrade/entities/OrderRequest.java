@@ -30,7 +30,6 @@ public class OrderRequest {
     private Timestamp auctionEndDate;
     @ManyToOne
     private User owner;
-    private Long batchNumber;
     private boolean completed;
 
 }

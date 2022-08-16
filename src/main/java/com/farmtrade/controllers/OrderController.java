@@ -3,8 +3,7 @@ package com.farmtrade.controllers;
 import com.farmtrade.dto.OrderRequestDto;
 import com.farmtrade.entities.OrderRequest;
 import com.farmtrade.filters.builders.OrderSpecificationBuilder;
-import com.farmtrade.services.impl.OrderRequestServiceImpl;
-import com.farmtrade.services.interfaces.OrderRequestService;
+import com.farmtrade.services.api.OrderRequestService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -38,11 +37,10 @@ public class OrderController {
             @RequestParam(required = false) Timestamp loadingDate,
             @RequestParam(required = false) Timestamp auctionEndDate,
             @RequestParam(required = false) Long owner,
-            @RequestParam(required = false) Long batchNumber,
             @RequestParam(required = false,defaultValue = "false") boolean completed
     ) throws UnsupportedDataTypeException {
         Specification<OrderRequest> specification = new OrderSpecificationBuilder(
-                quantity, unitPrice, size, productName,loadingDate,auctionEndDate, owner, batchNumber, completed
+                quantity, unitPrice, size, productName,loadingDate,auctionEndDate, owner, completed
         ).build();
         return orderRequestService.findPage(specification, pageable);
     }
@@ -65,20 +63,14 @@ public class OrderController {
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @PostMapping("/batch")
-    public List<OrderRequest> getBatches(){
-        return null;
-    }
-
-    @ResponseStatus(HttpStatus.OK)
     @PutMapping("/{id}/raisePrice")
     public OrderRequest updatePrice(@PathVariable Long id, @RequestBody BigDecimal unitCostUpdate){
         return orderRequestService.updatePrice(id,unitCostUpdate);
     }
 
-    @ResponseStatus(HttpStatus.OK)
-    @PostMapping("/{id}/complete?completeReason=(ULTIMATE_PRICE/SOLD)")
-    public boolean finishOrder(){
-        return false;
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/{id}")
+    public void deleteOrderRequest(@PathVariable Long id){
+        orderRequestService.delete(id);
     }
 }
