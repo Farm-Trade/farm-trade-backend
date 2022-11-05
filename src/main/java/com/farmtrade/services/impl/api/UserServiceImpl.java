@@ -137,7 +137,7 @@ public class UserServiceImpl implements UserService {
             User user = getUserByPhone(phone);
             List<Role> list = new ArrayList<>();
             list.add(user.getRole())  ;
-            String token = jwtTokenProvider.createToken(phone, list);
+            String token = jwtTokenProvider.createToken(user, list);
             return new TokenDto(token);
         }catch (AuthenticationException e){
             throw new BadCredentialsException("Invalid Phone or password");

@@ -1,5 +1,6 @@
 package com.farmtrade.security.jwt;
 
+import com.farmtrade.entities.User;
 import com.farmtrade.entities.enums.Role;
 import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,9 +41,12 @@ public class JwtTokenProvider {
     @PostConstruct
     protected void init() {secret = Base64.getEncoder().encodeToString(secret.getBytes());}
 
-    public String createToken(String phone, List<Role> role){
-        Claims claims = Jwts.claims().setSubject(phone);
+    public String createToken(User user, List<Role> role){
+        Claims claims = Jwts.claims().setSubject(user.getPhone());
         claims.put("roles", getRoleNames(role));
+        claims.put("email", user.getEmail());
+        claims.put("fullName", user.getFullName());
+        claims.put("id", user.getId());
 
         Date now = new Date();
         Date validity = new Date(now.getTime() + validateInMilliseconds);
