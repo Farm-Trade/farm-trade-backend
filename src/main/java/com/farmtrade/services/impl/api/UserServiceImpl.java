@@ -63,7 +63,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserByPhone(String phone) throws UsernameNotFoundException {
         return userRepository.findByPhone(phone)
-                .orElseThrow(() -> new UsernameNotFoundException("User does not exist for the phone: " + phone));
+                .orElseThrow(() -> new EntityNotFoundException(User.class, "phone", phone));
     }
 
     @Override
