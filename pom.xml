@@ -14,6 +14,10 @@
     <name>farmtrade</name>
     <description>Trade Market App for Farms</description>
     <dependencies>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
