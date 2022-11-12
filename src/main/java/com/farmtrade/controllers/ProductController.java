@@ -107,7 +107,7 @@ public class ProductController {
                     required = true
             )
     )
-    public Product updateImage(@PathVariable Long id, @RequestParam("img") MultipartFile img) {
-        return productService.updateImage(id, img);
+    public void updateImage(@PathVariable Long id, @RequestParam("img") MultipartFile img) {
+        productService.updateImage(id, img);
     }
 }
