@@ -26,6 +26,8 @@ create table products (
     primary key (id));
 
 alter table if exists products
+    add constraint fk_user_id foreign key (owner) references users;
+alter table if exists products
     add constraint fk_product_name_id foreign key (product_name_id) references product_names;
 
 
