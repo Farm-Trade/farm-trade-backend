@@ -34,7 +34,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             "/api/users/from-code/*",
             "/api/users/registration",
             "/api/users/activate",
-            "/api/status"
+            "/api/status",
+            "/api/img/**"
     };
     private final JwtTokenProvider jwtTokenProvider;
 

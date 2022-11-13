@@ -40,11 +40,7 @@ public class AuthenticationController {
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/reset-password/{id}")
     @Operation(summary = "Reset password by activation code")
-    public TokenDto resetPassword(@PathVariable Long id, @RequestBody ResetPasswordDto resetPasswordDto) throws UserNotActiveException, EntityNotFoundException, BadRequestException {
-        User user = userService.resetPassword(id, resetPasswordDto);
-
-        AuthenticationDto authenticationDto = AuthenticationDto.builder()
-                .password(resetPasswordDto.getPassword()).phone(user.getPhone()).build();
-        return userService.login(authenticationDto);
+    public void resetPassword(@PathVariable Long id, @RequestBody ResetPasswordDto resetPasswordDto) throws UserNotActiveException, EntityNotFoundException, BadRequestException {
+        userService.resetPassword(id, resetPasswordDto);
     }
 }
