@@ -26,8 +26,6 @@ create table products (
     primary key (id));
 
 alter table if exists products
-    add constraint fk_user_id foreign key (owner) references users;
-alter table if exists products
     add constraint fk_product_name_id foreign key (product_name_id) references product_names;
 
 
@@ -44,6 +42,8 @@ create table users (
     role varchar(255),
     primary key (id));
 
+alter table if exists products
+    add constraint fk_user_id foreign key (owner) references users;
 alter table if exists users
     add constraint unique_email_constraint unique (email);
 alter table if exists users
