@@ -1,4 +1,4 @@
-package com.farmtrade.security.jwt;
+package com.farmtrade.exceptions;
 
 import org.springframework.security.core.AuthenticationException;
 

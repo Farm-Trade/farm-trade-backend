@@ -24,7 +24,7 @@ public interface UserService  {
 
      void deleteUser(Long id);
 
-     User updateUser(Long id, @RequestBody UserUpdateDto userUpdateDto);
+     User updateUser(Long id, UserUpdateDto userUpdateDto);
 
      User getUser(Long id);
 
