@@ -32,11 +32,9 @@ import static com.farmtrade.constants.SwaggerConstants.SECURITY_SCHEME_NAME;
 @Tag(name = "Order Request Controller", description = "The Order Request API")
 public class OrderRequestController {
     private final OrderRequestService orderRequestService;
-    private final AuthService authService;
 
-    public OrderRequestController(OrderRequestService orderRequestService, AuthService authService) {
+    public OrderRequestController(OrderRequestService orderRequestService) {
         this.orderRequestService = orderRequestService;
-        this.authService = authService;
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -75,8 +73,7 @@ public class OrderRequestController {
     @PostMapping
     @Operation(summary = "Create order request")
     public OrderRequest create(@RequestBody OrderRequestCreateDto orderRequest) {
-        User user = authService.getUserFromContext();
-        return orderRequestService.create(orderRequest, user);
+        return orderRequestService.create(orderRequest);
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -87,19 +84,24 @@ public class OrderRequestController {
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @PutMapping("/{id}/update-unit-price")
+    @PatchMapping("/{id}/update-unit-price")
     @Operation(summary = "Update unit price")
     public OrderRequest updateUnitPrice(@PathVariable Long id) {
-        User user = authService.getUserFromContext();
-        return orderRequestService.updatePrice(id, user);
+        return orderRequestService.updatePrice(id);
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @PutMapping("/{id}/reject-unit-price")
+    @PatchMapping("/{id}/reject-unit-price")
     @Operation(summary = "Reject last user's unit price update")
     public OrderRequest rejectUpdateUnitPrice(@PathVariable Long id) {
-        User user = authService.getUserFromContext();
-        return orderRequestService.rejectUpdateUnitPrice(id, user);
+        return orderRequestService.rejectUpdateUnitPrice(id);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @PatchMapping("/{id}/apply-to-ultimate-price")
+    @Operation(summary = "Reject last user's unit price update")
+    public OrderRequest applyToUltimatePrice(@PathVariable Long id) {
+        return orderRequestService.applyToUltimatePrice(id);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -113,7 +115,6 @@ public class OrderRequestController {
     @DeleteMapping("/{id}/complete")
     @Operation(summary = "Complete order request")
     public void complete(@PathVariable Long id) {
-        User user = authService.getUserFromContext();
-        orderRequestService.complete(id, user);
+        orderRequestService.complete(id);
     }
 }
