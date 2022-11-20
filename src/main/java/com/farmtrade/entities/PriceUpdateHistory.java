@@ -1,6 +1,7 @@
 package com.farmtrade.entities;
 
 import lombok.*;
+import net.minidev.json.annotate.JsonIgnore;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
@@ -29,6 +30,7 @@ public class PriceUpdateHistory {
     private User updater;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "orderRequest", updatable = false)
+    @JsonIgnore
     private OrderRequest orderRequest;
     @CreationTimestamp
     private Timestamp createdAt;

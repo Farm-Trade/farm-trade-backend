@@ -1,12 +1,9 @@
 package com.farmtrade.controllers;
 
-import com.farmtrade.dto.orderrequests.OrderRequestCreateDto;
-import com.farmtrade.dto.orderrequests.OrderRequestUpdateDto;
+import com.farmtrade.dto.orderrequests.OrderRequestUpdateCreateDto;
 import com.farmtrade.entities.OrderRequest;
-import com.farmtrade.entities.User;
 import com.farmtrade.filters.builders.OrderRequestSpecificationsBuilder;
 import com.farmtrade.services.api.OrderRequestService;
-import com.farmtrade.services.security.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.activation.UnsupportedDataTypeException;
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.farmtrade.constants.SwaggerConstants.SECURITY_SCHEME_NAME;
@@ -44,8 +41,8 @@ public class OrderRequestController {
             @ParameterObject @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable,
             @RequestParam(required = false) List<BigDecimal> quantity,
             @RequestParam(required = false) List<BigDecimal> unitPrice,
-            @RequestParam(required = false) LocalDate loadingDate,
-            @RequestParam(required = false) LocalDate auctionEndDate,
+            @RequestParam(required = false) LocalDateTime loadingDate,
+            @RequestParam(required = false) LocalDateTime auctionEndDate,
             @RequestParam(required = false) Long productName,
             @RequestParam(required = false) Long owner,
             @RequestParam(required = false, defaultValue = "false") boolean completed
@@ -59,7 +56,7 @@ public class OrderRequestController {
                 owner,
                 completed
         ).build();
-        return orderRequestService.findPage(specification, pageable);
+        return orderRequestService.findPage(pageable);
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -72,14 +69,14 @@ public class OrderRequestController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     @Operation(summary = "Create order request")
-    public OrderRequest create(@RequestBody OrderRequestCreateDto orderRequest) {
+    public OrderRequest create(@RequestBody OrderRequestUpdateCreateDto orderRequest) {
         return orderRequestService.create(orderRequest);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/{id}")
     @Operation(summary = "Update order request")
-    public OrderRequest update(@PathVariable Long id, @RequestBody OrderRequestUpdateDto entity) {
+    public OrderRequest update(@PathVariable Long id, @RequestBody OrderRequestUpdateCreateDto entity) {
         return orderRequestService.fullyUpdate(id, entity);
     }
 

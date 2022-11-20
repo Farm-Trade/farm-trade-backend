@@ -1,8 +1,8 @@
 create table order_requests (
     id  bigserial not null,
-    auction_end_date date,
+    auction_end_date timestamp,
     completed boolean not null,
-    loading_date date,
+    loading_date timestamp,
     notes varchar(2048),
     quantity numeric(19, 2) check (quantity>=1) not null,
     unit_price numeric(19, 2) check (unit_price>=0) not null,

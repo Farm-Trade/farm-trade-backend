@@ -1,5 +1,10 @@
 package com.farmtrade.entities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -9,6 +14,7 @@ import javax.validation.constraints.Min;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -38,11 +44,11 @@ public class OrderRequest implements Serializable {
     private ProductName productName;
     private String notes;
     @Future
-    @DateTimeFormat(pattern = "dd/MM/yyyy")
-    private LocalDate loadingDate;
+    @DateTimeFormat(pattern = "mm/dd/yyyy HH:MM")
+    private LocalDateTime loadingDate;
     @Future
-    @DateTimeFormat(pattern = "dd/MM/yyyy")
-    private LocalDate auctionEndDate;
+    @DateTimeFormat(pattern = "mm/dd/yyyy HH:MM")
+    private LocalDateTime auctionEndDate;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "owner", updatable = false)
     private User owner;

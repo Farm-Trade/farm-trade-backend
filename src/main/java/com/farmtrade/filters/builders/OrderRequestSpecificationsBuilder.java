@@ -10,6 +10,7 @@ import com.farmtrade.filters.specifications.ProductSpecification;
 import javax.activation.UnsupportedDataTypeException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class OrderRequestSpecificationsBuilder extends SpecificationsBuilder<OrderRequest, OrderRequestSpecification> {
@@ -17,8 +18,8 @@ public class OrderRequestSpecificationsBuilder extends SpecificationsBuilder<Ord
     public OrderRequestSpecificationsBuilder(
             List<BigDecimal> quantity,
             List<BigDecimal> unitPrice,
-            LocalDate loadingDate,
-            LocalDate auctionEndDate,
+            LocalDateTime loadingDate,
+            LocalDateTime auctionEndDate,
             Long productName,
             Long owner,
             boolean completed

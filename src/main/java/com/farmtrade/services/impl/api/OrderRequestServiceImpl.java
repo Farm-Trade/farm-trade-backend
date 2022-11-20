@@ -1,7 +1,6 @@
 package com.farmtrade.services.impl.api;
 
-import com.farmtrade.dto.orderrequests.OrderRequestCreateDto;
-import com.farmtrade.dto.orderrequests.OrderRequestUpdateDto;
+import com.farmtrade.dto.orderrequests.OrderRequestUpdateCreateDto;
 import com.farmtrade.entities.OrderRequest;
 import com.farmtrade.entities.PriceUpdateHistory;
 import com.farmtrade.entities.ProductName;
@@ -23,7 +22,7 @@ import java.math.BigDecimal;
 import java.util.Optional;
 
 @Service
-public class OrderRequestServiceImpl extends BaseCrudService<OrderRequest, Long, OrderRequestUpdateDto> implements OrderRequestService {
+public class OrderRequestServiceImpl extends BaseCrudService<OrderRequest, Long, OrderRequestUpdateCreateDto> implements OrderRequestService {
     private final ProductNameService productNameService;
     private final PriceUpdateHistoryService priceUpdateHistoryService;
     private final AuthService authService;
@@ -41,7 +40,7 @@ public class OrderRequestServiceImpl extends BaseCrudService<OrderRequest, Long,
     }
 
     @Override
-    public OrderRequest fullyUpdate(Long id, OrderRequestUpdateDto orderRequestUpdateDto) {
+    public OrderRequest fullyUpdate(Long id, OrderRequestUpdateCreateDto orderRequestUpdateDto) {
         OrderRequest orderRequest = findOne(id);
         if (orderRequest.isCompleted()) {
             throw new BadRequestException("Completed order request cannot be updated");
@@ -49,11 +48,14 @@ public class OrderRequestServiceImpl extends BaseCrudService<OrderRequest, Long,
         if (!isCurrentUser(orderRequest.getOwner())) {
             throw new ForbiddenException("User can update only their own order request");
         }
+        if (orderRequest.getPriceUpdateHistory().size() != 0) {
+            throw new ForbiddenException("User can update within at least one price update");
+        }
         return super.fullyUpdate(id, orderRequestUpdateDto);
     }
 
     @Override
-    public OrderRequest create(OrderRequestCreateDto orderRequestCreateDto) {
+    public OrderRequest create(OrderRequestUpdateCreateDto orderRequestCreateDto) {
         ProductName productName = productNameService.findOne(orderRequestCreateDto.getProductName());
         User user = authService.getUserFromContext();
         if (!user.getRole().equals(Role.RESELLER)) {
