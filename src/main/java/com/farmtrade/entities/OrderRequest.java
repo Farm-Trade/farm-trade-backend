@@ -1,5 +1,6 @@
 package com.farmtrade.entities;
 
+import com.farmtrade.entities.enums.OrderRequestStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -52,7 +53,8 @@ public class OrderRequest implements Serializable {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "owner", updatable = false)
     private User owner;
-    private boolean completed;
+    @Enumerated(EnumType.STRING)
+    private OrderRequestStatus status;
     @OneToMany(mappedBy = "orderRequest",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private Set<PriceUpdateHistory> priceUpdateHistory = new HashSet<>();
 }

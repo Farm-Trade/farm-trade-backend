@@ -1,5 +1,5 @@
 create table price_update_history (
-    id  bigserial not null,
+    id int8 generated always as identity,
     created_at timestamp,
     updated_from numeric(19, 2),
     updated_to numeric(19, 2),

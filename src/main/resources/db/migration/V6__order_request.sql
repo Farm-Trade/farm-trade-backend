@@ -1,7 +1,7 @@
 create table order_requests (
-    id  bigserial not null,
+    id int8 generated always as identity,
     auction_end_date timestamp,
-    completed boolean not null,
+    status varchar(255) default 'PENDING_INFORMATION',
     loading_date timestamp,
     notes varchar(2048),
     quantity numeric(19, 2) check (quantity>=1) not null,

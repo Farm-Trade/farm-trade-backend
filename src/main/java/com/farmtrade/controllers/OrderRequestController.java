@@ -2,6 +2,7 @@ package com.farmtrade.controllers;
 
 import com.farmtrade.dto.orderrequests.OrderRequestUpdateCreateDto;
 import com.farmtrade.entities.OrderRequest;
+import com.farmtrade.entities.enums.OrderRequestStatus;
 import com.farmtrade.filters.builders.OrderRequestSpecificationsBuilder;
 import com.farmtrade.services.api.OrderRequestService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -45,8 +46,11 @@ public class OrderRequestController {
             @RequestParam(required = false) LocalDateTime auctionEndDate,
             @RequestParam(required = false) Long productName,
             @RequestParam(required = false) Long owner,
-            @RequestParam(required = false, defaultValue = "false") boolean completed
+            @RequestParam(required = false) List<OrderRequestStatus> status
     ) throws UnsupportedDataTypeException {
+        if (status == null) {
+            status = List.of(OrderRequestStatus.PENDING_INFORMATION, OrderRequestStatus.PUBLISHED);
+        }
         Specification<OrderRequest> specification = new OrderRequestSpecificationsBuilder(
                 quantity,
                 unitPrice,
@@ -54,9 +58,9 @@ public class OrderRequestController {
                 auctionEndDate,
                 productName,
                 owner,
-                completed
+                status
         ).build();
-        return orderRequestService.findPage(pageable);
+        return orderRequestService.findPage(specification, pageable);
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -109,9 +113,16 @@ public class OrderRequestController {
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @DeleteMapping("/{id}/complete")
+    @PatchMapping("/{id}/complete")
     @Operation(summary = "Complete order request")
     public void complete(@PathVariable Long id) {
         orderRequestService.complete(id);
+    }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PatchMapping("/{id}/publish")
+    @Operation(summary = "Publish order request")
+    public void publish(@PathVariable Long id) {
+        orderRequestService.publish(id);
     }
 }

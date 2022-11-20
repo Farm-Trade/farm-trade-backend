@@ -14,4 +14,6 @@ public interface OrderRequestService extends IBaseCrudService<OrderRequest, Long
     OrderRequest applyToUltimatePrice(Long id);
 
     void complete(Long id);
+
+    void publish(Long id);
 }

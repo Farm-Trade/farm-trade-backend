@@ -30,6 +30,11 @@ public abstract class BaseSpecification<T> implements Specification<T> {
             case BETWEEN -> {
                 return buildBetween(root, builder);
             }
+            case IN -> {
+                CriteriaBuilder.In<Object> in = builder.in(root.get(criteria.getKey()));
+                ((List<Object>) criteria.getValue()).forEach(in::value);
+                return in;
+            }
             default -> {
                 return null;
             }

@@ -1,6 +1,7 @@
 package com.farmtrade.filters.builders;
 
 import com.farmtrade.entities.OrderRequest;
+import com.farmtrade.entities.enums.OrderRequestStatus;
 import com.farmtrade.filters.FilterType;
 import com.farmtrade.filters.SearchCriteria;
 import com.farmtrade.filters.abstracts.SpecificationsBuilder;
@@ -22,7 +23,7 @@ public class OrderRequestSpecificationsBuilder extends SpecificationsBuilder<Ord
             LocalDateTime auctionEndDate,
             Long productName,
             Long owner,
-            boolean completed
+            List<OrderRequestStatus> status
     ) throws UnsupportedDataTypeException {
         super();
         this.with("quantity", FilterType.BETWEEN, quantity)
@@ -31,7 +32,7 @@ public class OrderRequestSpecificationsBuilder extends SpecificationsBuilder<Ord
                 .with("auctionEndDate", FilterType.EQUAL, auctionEndDate)
                 .with("productName", FilterType.EQUAL, productName)
                 .with("owner", FilterType.EQUAL, owner)
-                .with("completed", FilterType.EQUAL, completed);
+                .with("status", FilterType.IN, status);
     }
 
     @Override

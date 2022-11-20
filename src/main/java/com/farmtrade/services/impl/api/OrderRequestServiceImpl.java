@@ -5,6 +5,7 @@ import com.farmtrade.entities.OrderRequest;
 import com.farmtrade.entities.PriceUpdateHistory;
 import com.farmtrade.entities.ProductName;
 import com.farmtrade.entities.User;
+import com.farmtrade.entities.enums.OrderRequestStatus;
 import com.farmtrade.entities.enums.Role;
 import com.farmtrade.exceptions.BadRequestException;
 import com.farmtrade.exceptions.ForbiddenException;
@@ -42,14 +43,14 @@ public class OrderRequestServiceImpl extends BaseCrudService<OrderRequest, Long,
     @Override
     public OrderRequest fullyUpdate(Long id, OrderRequestUpdateCreateDto orderRequestUpdateDto) {
         OrderRequest orderRequest = findOne(id);
-        if (orderRequest.isCompleted()) {
+        if (orderRequest.getStatus().equals(OrderRequestStatus.COMPLETED)) {
             throw new BadRequestException("Completed order request cannot be updated");
         }
         if (!isCurrentUser(orderRequest.getOwner())) {
             throw new ForbiddenException("User can update only their own order request");
         }
-        if (orderRequest.getPriceUpdateHistory().size() != 0) {
-            throw new ForbiddenException("User can update within at least one price update");
+        if (orderRequest.getStatus().equals(OrderRequestStatus.PUBLISHED)) {
+            throw new ForbiddenException("User can update order request which is published");
         }
         return super.fullyUpdate(id, orderRequestUpdateDto);
     }
@@ -71,7 +72,7 @@ public class OrderRequestServiceImpl extends BaseCrudService<OrderRequest, Long,
                 .loadingDate(orderRequestCreateDto.getLoadingDate())
                 .auctionEndDate(orderRequestCreateDto.getAuctionEndDate())
                 .owner(user)
-                .completed(false)
+                .status(OrderRequestStatus.PENDING_INFORMATION)
                 .build();
         validatePrices(orderRequest);
         return repository.save(orderRequest);
@@ -81,7 +82,7 @@ public class OrderRequestServiceImpl extends BaseCrudService<OrderRequest, Long,
     @Transactional
     public OrderRequest updatePrice(Long id) {
         OrderRequest orderRequest = findOne(id);
-        if (orderRequest.isCompleted()) {
+        if (orderRequest.getStatus().equals(OrderRequestStatus.COMPLETED)) {
             throw new BadRequestException("Price cannot be updated on completed order request");
         }
         if (isCurrentUser(orderRequest.getOwner())) {
@@ -143,14 +144,27 @@ public class OrderRequestServiceImpl extends BaseCrudService<OrderRequest, Long,
         if (!isCurrentUser(orderRequest.getOwner())) {
             throw new BadRequestException("Only owners can complete their order request");
         }
-        orderRequest.setCompleted(true);
+        orderRequest.setStatus(OrderRequestStatus.COMPLETED);
+        repository.save(orderRequest);
+    }
+
+    @Override
+    public void publish(Long id) {
+        OrderRequest orderRequest = findOne(id);
+        if (orderRequest.getStatus().equals(OrderRequestStatus.COMPLETED)) {
+            throw new ForbiddenException("Completed order request cannot be published");
+        }
+        if (!isCurrentUser(orderRequest.getOwner())) {
+            throw new BadRequestException("Only owners can complete their order request");
+        }
+        orderRequest.setStatus(OrderRequestStatus.PUBLISHED);
         repository.save(orderRequest);
     }
 
     @Override
     public void delete(Long id) {
         OrderRequest orderRequest = findOne(id);
-        if (orderRequest.isCompleted()) {
+        if (orderRequest.getStatus().equals(OrderRequestStatus.COMPLETED)) {
             throw new ForbiddenException("Completed order request cannot be removed");
         }
         if (!isCurrentUser(orderRequest.getOwner())) {
