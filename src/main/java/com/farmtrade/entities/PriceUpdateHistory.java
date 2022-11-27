@@ -31,6 +31,9 @@ public class PriceUpdateHistory {
     @JoinColumn(name = "updater", updatable = false)
     private User updater;
     @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "product", updatable = false)
+    private Product product;
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "orderRequest", updatable = false)
     @JsonBackReference
     private OrderRequest orderRequest;

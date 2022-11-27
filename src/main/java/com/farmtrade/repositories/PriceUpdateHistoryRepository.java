@@ -15,6 +15,8 @@ import java.util.Set;
 public interface PriceUpdateHistoryRepository extends JpaRepository<PriceUpdateHistory, Long> {
     List<PriceUpdateHistory> findAllByOrderRequestIdAndUpdaterId(Long orderRequestId, Long updaterId);
 
+    Optional<PriceUpdateHistory> findFirstByOrderRequestIdAndUpdaterIdOrderByCreatedAtDesc(Long orderRequestId, Long updaterId);
+
     @Query(value = "SELECT DISTINCT ON(order_request) * FROM price_update_history WHERE updater = :userId ORDER BY order_request, created_at DESC", nativeQuery = true)
     Set<PriceUpdateHistory> findAllLastUpdatesByUserId(@Param("userId") Long userId);
 }

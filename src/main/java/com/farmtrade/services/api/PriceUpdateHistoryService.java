@@ -13,4 +13,6 @@ public interface PriceUpdateHistoryService {
     Optional<PriceUpdateHistory> getLastUpdateByOrderRequestAndUserId(Long orderRequestId, Long userId);
     void delete(PriceUpdateHistory priceUpdateHistory);
     Set<PriceUpdateHistory> findAllLastUpdatesByUserId(Long id);
+
+    List<PriceUpdateHistory> getAllByUserIdAndOrderRequestId(Long userId, Long orderRequestId);
 }

@@ -26,11 +26,7 @@ public class PriceUpdateHistoryServiceImpl implements PriceUpdateHistoryService 
 
     @Override
     public Optional<PriceUpdateHistory> getLastUpdateByOrderRequestAndUserId(Long orderRequestId, Long userId) {
-        List<PriceUpdateHistory> userUpdates = priceUpdateHistoryRepository.findAllByOrderRequestIdAndUpdaterId(
-                orderRequestId,
-                userId
-        );
-        return userUpdates.stream().max(Comparator.comparing(PriceUpdateHistory::getCreatedAt));
+        return priceUpdateHistoryRepository.findFirstByOrderRequestIdAndUpdaterIdOrderByCreatedAtDesc(orderRequestId, userId);
     }
 
     @Override
@@ -41,5 +37,10 @@ public class PriceUpdateHistoryServiceImpl implements PriceUpdateHistoryService 
     @Override
     public Set<PriceUpdateHistory> findAllLastUpdatesByUserId(Long id) {
         return priceUpdateHistoryRepository.findAllLastUpdatesByUserId(id);
+    }
+
+    @Override
+    public List<PriceUpdateHistory> getAllByUserIdAndOrderRequestId(Long userId, Long orderRequestId) {
+        return priceUpdateHistoryRepository.findAllByOrderRequestIdAndUpdaterId(userId, orderRequestId);
     }
 }

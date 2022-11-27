@@ -3,8 +3,9 @@ create table price_update_history (
     created_at timestamp,
     updated_from numeric(19, 2),
     updated_to numeric(19, 2),
-    order_request int8,
-    updater int8,
+    order_request int8 not null,
+    updater int8 not null,
+    product int8 not null,
     primary key (id));
 
 alter table if exists price_update_history

@@ -104,7 +104,7 @@ public class OrderRequestServiceImpl extends BaseCrudService<OrderRequest, Long,
         Product product = getProductMatchToOrderRequest(orderRequest);
         product.setReservedQuantity(orderRequest.getQuantity());
         productService.save(product);
-        PriceUpdateHistory priceUpdateHistory = this.buildPriceUpdateHistory(orderRequest, updatedPrice);
+        PriceUpdateHistory priceUpdateHistory = this.buildPriceUpdateHistory(orderRequest, updatedPrice, product);
         orderRequest.setUnitPrice(updatedPrice);
         orderRequest.getPriceUpdateHistory().add(priceUpdateHistory);
         return repository.save(orderRequest);
@@ -124,6 +124,15 @@ public class OrderRequestServiceImpl extends BaseCrudService<OrderRequest, Long,
                 throw new ForbiddenException("Price could be rejected only if last offer was provided by current user");
             }
             orderRequest.setUnitPrice(ph.getUpdatedFrom());
+            boolean hasOnlyOneRate = priceUpdateHistoryService.getAllByUserIdAndOrderRequestId(
+                    user.getId(),
+                    orderRequest.getId()
+            ).size() == 1;
+            if (hasOnlyOneRate) {
+                Product product = ph.getProduct();
+                product.setReservedQuantity(product.getReservedQuantity().subtract(orderRequest.getQuantity()).abs());
+                productService.save(product);
+            }
             priceUpdateHistoryService.delete(ph);
         });
         return repository.save(orderRequest);
@@ -224,11 +233,16 @@ public class OrderRequestServiceImpl extends BaseCrudService<OrderRequest, Long,
         }
     }
 
-    private PriceUpdateHistory buildPriceUpdateHistory(OrderRequest orderRequest, BigDecimal updatedPrice) {
+    private PriceUpdateHistory buildPriceUpdateHistory(
+            OrderRequest orderRequest,
+            BigDecimal updatedPrice,
+            Product product
+    ) {
         return PriceUpdateHistory.builder()
                 .orderRequest(orderRequest)
                 .updatedFrom(orderRequest.getUnitPrice())
                 .updatedTo(updatedPrice)
+                .product(product)
                 .updater(this.authService.getUserFromContext())
                 .build();
     }
