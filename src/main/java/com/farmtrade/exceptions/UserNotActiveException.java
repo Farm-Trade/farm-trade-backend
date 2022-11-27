@@ -6,6 +6,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ResponseStatus(HttpStatus.CONFLICT)
 public class UserNotActiveException extends RuntimeException {
     public UserNotActiveException() {
-        super("User is not active");
+        super("Користувач не активний");
     }
 }

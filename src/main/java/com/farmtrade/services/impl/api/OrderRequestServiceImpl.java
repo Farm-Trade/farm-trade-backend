@@ -52,13 +52,13 @@ public class OrderRequestServiceImpl extends BaseCrudService<OrderRequest, Long,
     public OrderRequest fullyUpdate(Long id, OrderRequestUpdateCreateDto orderRequestUpdateDto) {
         OrderRequest orderRequest = findOne(id);
         if (orderRequest.getStatus().equals(OrderRequestStatus.COMPLETED)) {
-            throw new BadRequestException("Completed order request cannot be updated");
+            throw new BadRequestException("Завершений запит не може бути обновлений");
         }
         if (!isCurrentUser(orderRequest.getOwner())) {
-            throw new ForbiddenException("User can update only their own order request");
+            throw new ForbiddenException("Користувач не може оновити не його запит");
         }
         if (orderRequest.getStatus().equals(OrderRequestStatus.PUBLISHED)) {
-            throw new ForbiddenException("User can update order request which is published");
+            throw new ForbiddenException("Опублікований запит не може бути обновлений");
         }
         return super.fullyUpdate(id, orderRequestUpdateDto);
     }
@@ -68,7 +68,7 @@ public class OrderRequestServiceImpl extends BaseCrudService<OrderRequest, Long,
         ProductName productName = productNameService.findOne(orderRequestCreateDto.getProductName());
         User user = authService.getUserFromContext();
         if (!user.getRole().equals(Role.RESELLER)) {
-            throw new ForbiddenException("Only RESELLER can create order request");
+            throw new ForbiddenException("Тільки RESELLER може створити запит");
         }
         final OrderRequest orderRequest = OrderRequest.builder()
                 .quantity(orderRequestCreateDto.getQuantity())
@@ -91,13 +91,13 @@ public class OrderRequestServiceImpl extends BaseCrudService<OrderRequest, Long,
     public OrderRequest updatePrice(Long id) {
         OrderRequest orderRequest = findOne(id);
         if (orderRequest.getStatus().equals(OrderRequestStatus.PENDING_INFORMATION)) {
-            throw new BadRequestException("Price cannot be updated on pending information order request");
+            throw new BadRequestException("Користувач не може зробити ставку на запит очікуючий доповнення");
         }
         if (orderRequest.getStatus().equals(OrderRequestStatus.COMPLETED)) {
-            throw new BadRequestException("Price cannot be updated on completed order request");
+            throw new BadRequestException("Користувач не може зробити ставку на завершений запит");
         }
         if (isCurrentUser(orderRequest.getOwner())) {
-            throw new ForbiddenException("Owner cannot update price of the order request");
+            throw new ForbiddenException("Власник запиту не може поставити ставку");
         }
         BigDecimal updatedPrice = orderRequest.getUnitPrice().subtract(orderRequest.getUnitPriceUpdate());
         validatePrices(orderRequest);
@@ -121,7 +121,7 @@ public class OrderRequestServiceImpl extends BaseCrudService<OrderRequest, Long,
         );
         priceUpdateHistory.ifPresent(ph -> {
             if (!isCurrentUser(ph.getUpdater())) {
-                throw new ForbiddenException("Price could be rejected only if last offer was provided by current user");
+                throw new ForbiddenException("Не можна відмінити ставку, так як ви не є останнім користувачем який зробив ставку");
             }
             orderRequest.setUnitPrice(ph.getUpdatedFrom());
             boolean hasOnlyOneRate = priceUpdateHistoryService.getAllByUserIdAndOrderRequestId(
@@ -142,7 +142,7 @@ public class OrderRequestServiceImpl extends BaseCrudService<OrderRequest, Long,
     public void complete(Long id) {
         OrderRequest orderRequest = findOne(id);
         if (!isCurrentUser(orderRequest.getOwner())) {
-            throw new BadRequestException("Only owners can complete their order request");
+            throw new BadRequestException("Тільки власник може завершити свій запит");
         }
         orderRequest.setStatus(OrderRequestStatus.COMPLETED);
         repository.save(orderRequest);
@@ -152,10 +152,10 @@ public class OrderRequestServiceImpl extends BaseCrudService<OrderRequest, Long,
     public void publish(Long id) {
         OrderRequest orderRequest = findOne(id);
         if (orderRequest.getStatus().equals(OrderRequestStatus.COMPLETED)) {
-            throw new ForbiddenException("Completed order request cannot be published");
+            throw new ForbiddenException("Завершений запит не може бути опублікований");
         }
         if (!isCurrentUser(orderRequest.getOwner())) {
-            throw new BadRequestException("Only owners can complete their order request");
+            throw new BadRequestException("Тільки власники можуть опублікувати їх запити");
         }
         orderRequest.setStatus(OrderRequestStatus.PUBLISHED);
         repository.save(orderRequest);
@@ -165,10 +165,10 @@ public class OrderRequestServiceImpl extends BaseCrudService<OrderRequest, Long,
     public void delete(Long id) {
         OrderRequest orderRequest = findOne(id);
         if (orderRequest.getStatus().equals(OrderRequestStatus.COMPLETED)) {
-            throw new ForbiddenException("Completed order request cannot be removed");
+            throw new ForbiddenException("Завершений запит не може бути видалений");
         }
         if (!isCurrentUser(orderRequest.getOwner())) {
-            throw new ForbiddenException("Only owners can delete their order request");
+            throw new ForbiddenException("Тільки власники можуть видалити їх запити");
         }
         super.delete(orderRequest.getId());
     }
@@ -177,7 +177,7 @@ public class OrderRequestServiceImpl extends BaseCrudService<OrderRequest, Long,
     public Page<OrderRequest> findAllOrderRequestMatchToCurrentUser(Pageable pageable) {
         User currentUser = this.authService.getUserFromContext();
         if (currentUser.getRole().equals(Role.RESELLER) || currentUser.getRole().equals(Role.ADMIN)) {
-            throw new ForbiddenException("Only Farmer can check order requests related to them");
+            throw new ForbiddenException("Тільки фермери можуть подивтись запити які їм підходять");
         }
         Set<Product> products = currentUser.getProducts();
         List<ProductName> productNames = products.stream().map(Product::getProductName).distinct().collect(Collectors.toList());
@@ -194,8 +194,13 @@ public class OrderRequestServiceImpl extends BaseCrudService<OrderRequest, Long,
 
     @Override
     public Page<OrderRequest> findAllOrderRequestRatedByUser(Pageable pageable) {
-        User user = authService.getUserFromContext();
-        Set<PriceUpdateHistory> priceUpdateHistories = priceUpdateHistoryService.findAllLastUpdatesByUserId(user.getId());
+        User currentUser = authService.getUserFromContext();
+        if (currentUser.getRole().equals(Role.RESELLER) || currentUser.getRole().equals(Role.ADMIN)) {
+            throw new ForbiddenException("Тільки фермери можуть подивтись запити на які вони зробили тавку");
+        }
+        Set<PriceUpdateHistory> priceUpdateHistories = priceUpdateHistoryService.findAllLastUpdatesByUserId(
+                currentUser.getId()
+        );
         return orderRequestRepository.findAllByPriceUpdateHistoryIn(pageable, priceUpdateHistories);
     }
 
@@ -207,7 +212,7 @@ public class OrderRequestServiceImpl extends BaseCrudService<OrderRequest, Long,
                 orderRequest.getSizeFrom()
         );
         if (products.size() == 0) {
-            throw new BadRequestException("You have no products that match the conditions of the order request");
+            throw new BadRequestException("У вас немає жодних продуктів які б підходили до цього запиту");
         }
         Optional<Product> availableProduct = products.stream().filter(product -> {
             BigDecimal freeQuantity = product.getQuantity().subtract(product.getReservedQuantity());
@@ -215,7 +220,7 @@ public class OrderRequestServiceImpl extends BaseCrudService<OrderRequest, Long,
         }).findFirst();
 
         if (availableProduct.isEmpty()) {
-            throw new BadRequestException("You have no free quantity of the product related to the order request");
+            throw new BadRequestException("У вас немає достатньо кількость продукут який вказаний в цьому запиті");
         }
 
         return availableProduct.get();
@@ -229,7 +234,7 @@ public class OrderRequestServiceImpl extends BaseCrudService<OrderRequest, Long,
     private void validatePrices(OrderRequest orderRequest) {
         BigDecimal expectedNextRate = orderRequest.getUnitPrice().subtract(orderRequest.getUnitPriceUpdate());
         if (BigDecimalUtil.lessThen(expectedNextRate, BigDecimal.ZERO)) {
-            throw new BadRequestException("Unit price should be grater than unit update price");
+            throw new BadRequestException("Ціна за одиницю повинна бути більна ніж ціна ставки");
         }
     }
 

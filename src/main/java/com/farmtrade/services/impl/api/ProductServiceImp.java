@@ -39,14 +39,14 @@ public class ProductServiceImp extends BaseCrudService<Product, Long, UpdateProd
     public Product create(CreateProductDto entity, User user) {
         Role userRole = user.getRole();
         if (!userRole.equals(Role.FARMER)) {
-            throw new ForbiddenException(String.format("User with role %s cannot perform this cation", userRole));
+            throw new ForbiddenException(String.format("Користувач з роллю %s не може зробити цю дію", userRole));
         }
 
         ProductName productName = productNameService.findOne(entity.getProductName());
 
         if (!productName.isApproved()) {
             throw new BadRequestException(String.format(
-                    "Cannot create product due to %s is not active.",
+                    "Не можна створити продукт тому що %s не підтверджений.",
                     productName.getName()
             ));
         }

@@ -63,7 +63,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserByPhone(String phone) throws UsernameNotFoundException {
         return userRepository.findByPhone(phone)
-                .orElseThrow(() -> new EntityNotFoundException(User.class, "phone", phone));
+                .orElseThrow(() -> new EntityNotFoundException(User.class, "телефоном", phone));
     }
 
     @Override
@@ -100,7 +100,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public User registration(UserCreateDto userCreateDto) throws ApiValidationException {
         if (userCreateDto.getRole() == Role.ADMIN) {
-            throw new ApiValidationException("Chose another role");
+            throw new ApiValidationException("Вибереть іншу роль");
         }
 
         User user = User.builder()
@@ -140,7 +140,7 @@ public class UserServiceImpl implements UserService {
             String token = jwtTokenProvider.createToken(user, list);
             return new TokenDto(token);
         }catch (AuthenticationException e){
-            throw new BadCredentialsException("Invalid Phone or password");
+            throw new BadCredentialsException("Невірний телефон або пароль");
         }
     }
 
@@ -159,7 +159,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserByActivationCode(String activationCode) throws UserNotActiveException{
         return userRepository.findByActivationCode(activationCode)
-                .orElseThrow(() -> new EntityNotFoundException(User.class, "activation code", activationCode));
+                .orElseThrow(() -> new EntityNotFoundException(User.class, "кодом активації", activationCode));
     }
 
     @Override
@@ -169,7 +169,7 @@ public class UserServiceImpl implements UserService {
         String activationCodeFromDB = user.getActivationCode();
 
         if (activationCodeFromDB == null || !activationCodeFromDB.equals(activationCode)) {
-            throw new BadRequestException(String.format("User is not match to %s activation code", activationCode));
+            throw new BadRequestException(String.format("Користувач не сківпадє %s з цим кодом активації", activationCode));
         }
         if (!user.isActive()) {
             throw new UserNotActiveException();

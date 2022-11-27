@@ -19,11 +19,9 @@ public class Product implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Min(value = 1, message = "Size should be equal or greater 1")
     private BigDecimal quantity;
     @Column(nullable = false)
     private BigDecimal reservedQuantity;
-    @Min(value = 1, message = "Size should be equal or greater 1")
     private BigDecimal size;
     private String img;
     @ManyToOne(fetch = FetchType.EAGER)

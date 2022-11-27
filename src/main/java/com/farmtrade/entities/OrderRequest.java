@@ -32,14 +32,10 @@ public class OrderRequest implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(nullable = false)
-    @Min(value = 1, message = "Quantity should be equal or greater 1")
     private BigDecimal quantity;
     @Column(nullable = false)
-    @Min(value = 0, message = "Unit price should be equal or greater 0")
     private BigDecimal unitPrice;
-    @Min(value = 0, message = "Unit price update should be equal or greater 0")
     private BigDecimal unitPriceUpdate;
-    @Min(value = 1, message = "Size from should be equal or greater 1")
     private BigDecimal sizeFrom;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "product_name_id", updatable = false)
