@@ -98,13 +98,6 @@ public class OrderRequestController {
         return orderRequestService.rejectUpdateUnitPrice(id);
     }
 
-    @ResponseStatus(HttpStatus.OK)
-    @PatchMapping("/{id}/apply-to-ultimate-price")
-    @Operation(summary = "Reject last user's unit price update")
-    public OrderRequest applyToUltimatePrice(@PathVariable Long id) {
-        return orderRequestService.applyToUltimatePrice(id);
-    }
-
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete product")
@@ -124,5 +117,12 @@ public class OrderRequestController {
     @Operation(summary = "Publish order request")
     public void publish(@PathVariable Long id) {
         orderRequestService.publish(id);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/match-requests")
+    @Operation(summary = "Get all order request related to user's prodcut")
+    public List<OrderRequest> findAllOrderRequestMatchToCurrentUser() {
+        return orderRequestService.findAllOrderRequestMatchToCurrentUser();
     }
 }

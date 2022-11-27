@@ -1,10 +1,7 @@
 package com.farmtrade.services.impl.api;
 
 import com.farmtrade.dto.orderrequests.OrderRequestUpdateCreateDto;
-import com.farmtrade.entities.OrderRequest;
-import com.farmtrade.entities.PriceUpdateHistory;
-import com.farmtrade.entities.ProductName;
-import com.farmtrade.entities.User;
+import com.farmtrade.entities.*;
 import com.farmtrade.entities.enums.OrderRequestStatus;
 import com.farmtrade.entities.enums.Role;
 import com.farmtrade.exceptions.BadRequestException;
@@ -14,25 +11,33 @@ import com.farmtrade.services.abstracts.BaseCrudService;
 import com.farmtrade.services.api.OrderRequestService;
 import com.farmtrade.services.api.PriceUpdateHistoryService;
 import com.farmtrade.services.api.ProductNameService;
+import com.farmtrade.services.api.ProductService;
 import com.farmtrade.services.security.AuthService;
 import com.farmtrade.utils.BigDecimalUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderRequestServiceImpl extends BaseCrudService<OrderRequest, Long, OrderRequestUpdateCreateDto> implements OrderRequestService {
     private final ProductNameService productNameService;
     private final PriceUpdateHistoryService priceUpdateHistoryService;
+    private final ProductService productService;
     private final AuthService authService;
+    private final OrderRequestRepository orderRequestRepository;
 
-    public OrderRequestServiceImpl(OrderRequestRepository orderRequestRepository, ProductNameService productNameService, PriceUpdateHistoryService priceUpdateHistoryService, AuthService authService) {
+    public OrderRequestServiceImpl(OrderRequestRepository orderRequestRepository, ProductNameService productNameService, PriceUpdateHistoryService priceUpdateHistoryService, ProductService productService, AuthService authService) {
         super(orderRequestRepository);
         this.productNameService = productNameService;
         this.priceUpdateHistoryService = priceUpdateHistoryService;
+        this.productService = productService;
         this.authService = authService;
+        this.orderRequestRepository = orderRequestRepository;
     }
 
     @Override
@@ -66,7 +71,7 @@ public class OrderRequestServiceImpl extends BaseCrudService<OrderRequest, Long,
                 .quantity(orderRequestCreateDto.getQuantity())
                 .unitPrice(orderRequestCreateDto.getUnitPrice())
                 .unitPriceUpdate(orderRequestCreateDto.getUnitPriceUpdate())
-                .ultimatePrice(orderRequestCreateDto.getUltimatePrice())
+                .sizeFrom(orderRequestCreateDto.getSizeFrom())
                 .productName(productName)
                 .notes(orderRequestCreateDto.getNotes())
                 .loadingDate(orderRequestCreateDto.getLoadingDate())
@@ -82,6 +87,9 @@ public class OrderRequestServiceImpl extends BaseCrudService<OrderRequest, Long,
     @Transactional
     public OrderRequest updatePrice(Long id) {
         OrderRequest orderRequest = findOne(id);
+        if (orderRequest.getStatus().equals(OrderRequestStatus.PENDING_INFORMATION)) {
+            throw new BadRequestException("Price cannot be updated on pending information order request");
+        }
         if (orderRequest.getStatus().equals(OrderRequestStatus.COMPLETED)) {
             throw new BadRequestException("Price cannot be updated on completed order request");
         }
@@ -89,17 +97,13 @@ public class OrderRequestServiceImpl extends BaseCrudService<OrderRequest, Long,
             throw new ForbiddenException("Owner cannot update price of the order request");
         }
         BigDecimal updatedPrice = orderRequest.getUnitPrice().subtract(orderRequest.getUnitPriceUpdate());
-        if (BigDecimalUtil.lessThenOrEqual(updatedPrice, BigDecimal.ZERO)) {
-            throw new ForbiddenException("Request price cannot be less than 0");
-        }
-        BigDecimal ultimatePrice = orderRequest.getUltimatePrice();
-        if (ultimatePrice != null && BigDecimalUtil.lessThen(ultimatePrice, ultimatePrice)) {
-            throw new ForbiddenException("Request price cannot be less than ultimate price");
-        }
         validatePrices(orderRequest);
+        Product product = getProductMatchToOrderRequest(orderRequest);
+        product.setReservedQuantity(orderRequest.getQuantity());
+        productService.save(product);
         PriceUpdateHistory priceUpdateHistory = this.buildPriceUpdateHistory(orderRequest, updatedPrice);
         orderRequest.setUnitPrice(updatedPrice);
-        priceUpdateHistoryService.save(priceUpdateHistory);
+        orderRequest.getPriceUpdateHistory().add(priceUpdateHistory);
         return repository.save(orderRequest);
     }
 
@@ -119,22 +123,6 @@ public class OrderRequestServiceImpl extends BaseCrudService<OrderRequest, Long,
             orderRequest.setUnitPrice(ph.getUpdatedFrom());
             priceUpdateHistoryService.delete(ph);
         });
-        return repository.save(orderRequest);
-    }
-
-    @Override
-    @Transactional
-    public OrderRequest applyToUltimatePrice(Long id) {
-        OrderRequest orderRequest = findOne(id);
-        if (isCurrentUser(orderRequest.getOwner())) {
-            throw new ForbiddenException("Owner cannot apply fo ultimate price of the order request");
-        }
-        if (BigDecimalUtil.lessThenOrEqual(orderRequest.getUnitPrice(), orderRequest.getUltimatePrice())) {
-            throw new BadRequestException("Cannot apply fo ultimate price, ultimate price is greater or equal unit price");
-        }
-        PriceUpdateHistory priceUpdateHistory = this.buildPriceUpdateHistory(orderRequest, orderRequest.getUltimatePrice());
-        orderRequest.setUnitPrice(orderRequest.getUltimatePrice());
-        priceUpdateHistoryService.save(priceUpdateHistory);
         return repository.save(orderRequest);
     }
 
@@ -173,14 +161,53 @@ public class OrderRequestServiceImpl extends BaseCrudService<OrderRequest, Long,
         super.delete(orderRequest.getId());
     }
 
+    @Override
+    public List<OrderRequest> findAllOrderRequestMatchToCurrentUser() {
+        User currentUser = this.authService.getUserFromContext();
+        if (currentUser.getRole().equals(Role.RESELLER) || currentUser.getRole().equals(Role.ADMIN)) {
+            throw new ForbiddenException("Only Farmer can check order requests related to them");
+        }
+        Set<Product> products = currentUser.getProducts();
+        List<ProductName> productNames = products.stream().map(Product::getProductName).distinct().collect(Collectors.toList());
+
+        List<OrderRequest> relatedOrderRequest = orderRequestRepository.findAllByProductNameIn(productNames);
+
+        return relatedOrderRequest.stream().filter(orderRequest -> products.stream().anyMatch(product -> {
+            BigDecimal freeQuantity = product.getQuantity().subtract(product.getReservedQuantity()).abs();
+            return orderRequest.getProductNameId().equals(product.getProductNameId()) &&
+                    BigDecimalUtil.lessThenOrEqual(orderRequest.getQuantity(), freeQuantity) &&
+                    BigDecimalUtil.greaterThenOrEqual(orderRequest.getSizeFrom(), product.getSize());
+        })).collect(Collectors.toList());
+    }
+
+    private Product getProductMatchToOrderRequest(OrderRequest orderRequest) throws BadRequestException {
+        User currentUser = this.authService.getUserFromContext();
+        List<Product> products = productService.allProductsByUserAndProductNameAndSizeFrom(
+                currentUser.getId(),
+                orderRequest.getProductName().getId(),
+                orderRequest.getSizeFrom()
+        );
+        if (products.size() == 0) {
+            throw new BadRequestException("You have no products that match the conditions of the order request");
+        }
+        Optional<Product> availableProduct = products.stream().filter(product -> {
+            BigDecimal freeQuantity = product.getQuantity().subtract(product.getReservedQuantity());
+            return BigDecimalUtil.greaterThenOrEqual(freeQuantity, orderRequest.getQuantity());
+        }).findFirst();
+
+        if (availableProduct.isEmpty()) {
+            throw new BadRequestException("You have no free quantity of the product related to the order request");
+        }
+
+        return availableProduct.get();
+    }
+
     private boolean isCurrentUser(User user) {
         User currentUser = this.authService.getUserFromContext();
         return currentUser.getId().equals(user.getId());
     }
+
     private void validatePrices(OrderRequest orderRequest) {
-        if (BigDecimalUtil.lessThenOrEqual(orderRequest.getUnitPrice(), orderRequest.getUltimatePrice())) {
-            throw new BadRequestException("Unit price should be grater than ultimate price");
-        }
         BigDecimal expectedNextRate = orderRequest.getUnitPrice().subtract(orderRequest.getUnitPriceUpdate());
         if (BigDecimalUtil.lessThen(expectedNextRate, BigDecimal.ZERO)) {
             throw new BadRequestException("Unit price should be grater than unit update price");

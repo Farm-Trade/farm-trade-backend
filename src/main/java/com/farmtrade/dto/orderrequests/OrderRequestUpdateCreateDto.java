@@ -19,7 +19,7 @@ public class OrderRequestUpdateCreateDto {
     @NotNull
     private BigDecimal unitPrice;
     private BigDecimal unitPriceUpdate;
-    private BigDecimal ultimatePrice;
+    private BigDecimal sizeFrom;
     private Long productName;
     private String notes;
     private LocalDateTime loadingDate;

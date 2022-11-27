@@ -7,7 +7,7 @@ create table order_requests (
     quantity numeric(19, 2) check (quantity>=1) not null,
     unit_price numeric(19, 2) check (unit_price>=0) not null,
     unit_price_update numeric(19, 2) check (unit_price_update>=0),
-    ultimate_price numeric(19, 2) check (ultimate_price>=0),
+    size_from numeric(19, 2) check (size_from>=0),
     owner int8,
     product_name_id int8,
     primary key (id));

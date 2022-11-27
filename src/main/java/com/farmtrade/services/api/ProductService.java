@@ -10,9 +10,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
+import java.util.List;
+
 public interface ProductService extends IBaseCrudService<Product, Long, UpdateProductDto> {
     Product create(CreateProductDto entity, User user);
-
+    Product save(Product product);
     Product updateImage(Long id, MultipartFile img);
 
     Page<Product> findPage(Pageable pageable);
@@ -26,4 +29,6 @@ public interface ProductService extends IBaseCrudService<Product, Long, UpdatePr
     Product fullyUpdate(Long id, UpdateProductDto updateDTO);
 
     void delete(Long id);
+
+    List<Product> allProductsByUserAndProductNameAndSizeFrom(Long userId, Long productNameId, BigDecimal size);
 }
