@@ -64,6 +64,15 @@ public class OrderRequestController {
     }
 
     @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/farmer-related")
+    @Operation(summary = "Get all order request related to user's prodcut")
+    public Page<OrderRequest> findAllOrderRequestMatchToCurrentUser(
+            @ParameterObject @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable
+    ) {
+        return orderRequestService.findAllOrderRequestMatchToCurrentUser(pageable);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{id}")
     @Operation(summary = "Get order request")
     public OrderRequest findOne(@PathVariable Long id) {
@@ -117,12 +126,5 @@ public class OrderRequestController {
     @Operation(summary = "Publish order request")
     public void publish(@PathVariable Long id) {
         orderRequestService.publish(id);
-    }
-
-    @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/match-requests")
-    @Operation(summary = "Get all order request related to user's prodcut")
-    public List<OrderRequest> findAllOrderRequestMatchToCurrentUser() {
-        return orderRequestService.findAllOrderRequestMatchToCurrentUser();
     }
 }

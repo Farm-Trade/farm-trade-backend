@@ -14,6 +14,9 @@ import com.farmtrade.services.api.ProductNameService;
 import com.farmtrade.services.api.ProductService;
 import com.farmtrade.services.security.AuthService;
 import com.farmtrade.utils.BigDecimalUtil;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -162,7 +165,7 @@ public class OrderRequestServiceImpl extends BaseCrudService<OrderRequest, Long,
     }
 
     @Override
-    public List<OrderRequest> findAllOrderRequestMatchToCurrentUser() {
+    public Page<OrderRequest> findAllOrderRequestMatchToCurrentUser(Pageable pageable) {
         User currentUser = this.authService.getUserFromContext();
         if (currentUser.getRole().equals(Role.RESELLER) || currentUser.getRole().equals(Role.ADMIN)) {
             throw new ForbiddenException("Only Farmer can check order requests related to them");
@@ -170,14 +173,14 @@ public class OrderRequestServiceImpl extends BaseCrudService<OrderRequest, Long,
         Set<Product> products = currentUser.getProducts();
         List<ProductName> productNames = products.stream().map(Product::getProductName).distinct().collect(Collectors.toList());
 
-        List<OrderRequest> relatedOrderRequest = orderRequestRepository.findAllByProductNameIn(productNames);
-
-        return relatedOrderRequest.stream().filter(orderRequest -> products.stream().anyMatch(product -> {
+        List<OrderRequest> relatedOrderRequest = orderRequestRepository.findAllByProductNameInAndStatus(productNames, OrderRequestStatus.PUBLISHED);
+        List<OrderRequest> orderRequests = relatedOrderRequest.stream().filter(orderRequest -> products.stream().anyMatch(product -> {
             BigDecimal freeQuantity = product.getQuantity().subtract(product.getReservedQuantity()).abs();
-            return orderRequest.getProductNameId().equals(product.getProductNameId()) &&
+            return  orderRequest.getProductName().getId().equals(product.getProductName().getId()) &&
                     BigDecimalUtil.lessThenOrEqual(orderRequest.getQuantity(), freeQuantity) &&
                     BigDecimalUtil.greaterThenOrEqual(orderRequest.getSizeFrom(), product.getSize());
         })).collect(Collectors.toList());
+        return new PageImpl<>(orderRequests, pageable, orderRequests.size());
     }
 
     private Product getProductMatchToOrderRequest(OrderRequest orderRequest) throws BadRequestException {

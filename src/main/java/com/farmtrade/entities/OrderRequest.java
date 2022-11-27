@@ -57,8 +57,4 @@ public class OrderRequest implements Serializable {
     private OrderRequestStatus status;
     @OneToMany(mappedBy = "orderRequest",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private Set<PriceUpdateHistory> priceUpdateHistory = new HashSet<>();
-
-    public Long getProductNameId() {
-        return productName.getId();
-    }
 }
