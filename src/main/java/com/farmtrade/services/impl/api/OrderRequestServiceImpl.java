@@ -178,9 +178,16 @@ public class OrderRequestServiceImpl extends BaseCrudService<OrderRequest, Long,
             BigDecimal freeQuantity = product.getQuantity().subtract(product.getReservedQuantity()).abs();
             return  orderRequest.getProductName().getId().equals(product.getProductName().getId()) &&
                     BigDecimalUtil.lessThenOrEqual(orderRequest.getQuantity(), freeQuantity) &&
-                    BigDecimalUtil.greaterThenOrEqual(orderRequest.getSizeFrom(), product.getSize());
+                    BigDecimalUtil.greaterThenOrEqual(product.getSize(), orderRequest.getSizeFrom());
         })).collect(Collectors.toList());
         return new PageImpl<>(orderRequests, pageable, orderRequests.size());
+    }
+
+    @Override
+    public Page<OrderRequest> findAllOrderRequestRatedByUser(Pageable pageable) {
+        User user = authService.getUserFromContext();
+        Set<PriceUpdateHistory> priceUpdateHistories = priceUpdateHistoryService.findAllLastUpdatesByUserId(user.getId());
+        return orderRequestRepository.findAllByPriceUpdateHistoryIn(pageable, priceUpdateHistories);
     }
 
     private Product getProductMatchToOrderRequest(OrderRequest orderRequest) throws BadRequestException {

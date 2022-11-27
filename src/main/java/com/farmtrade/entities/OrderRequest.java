@@ -21,11 +21,12 @@ import java.util.Set;
 
 @Entity
 @Table(name = "order_requests")
-@Data
+@Getter
+@Setter
+@ToString
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
 public class OrderRequest implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

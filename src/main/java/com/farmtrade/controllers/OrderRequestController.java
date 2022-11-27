@@ -39,7 +39,8 @@ public class OrderRequestController {
     @GetMapping
     @Operation(summary = "Get order request page")
     public Page<OrderRequest> findPage(
-            @ParameterObject @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable,
+            @ParameterObject
+            @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable,
             @RequestParam(required = false) List<BigDecimal> quantity,
             @RequestParam(required = false) List<BigDecimal> unitPrice,
             @RequestParam(required = false) LocalDateTime loadingDate,
@@ -70,6 +71,15 @@ public class OrderRequestController {
             @ParameterObject @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable
     ) {
         return orderRequestService.findAllOrderRequestMatchToCurrentUser(pageable);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/own-rated")
+    @Operation(summary = "Get all order request related to user's prodcut")
+    public Page<OrderRequest> findAllOrderRequestRatedByUser(
+            @ParameterObject @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable
+    ) {
+        return orderRequestService.findAllOrderRequestRatedByUser(pageable);
     }
 
     @ResponseStatus(HttpStatus.OK)

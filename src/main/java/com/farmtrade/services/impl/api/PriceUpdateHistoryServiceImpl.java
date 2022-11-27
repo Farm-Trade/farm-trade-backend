@@ -1,15 +1,15 @@
 package com.farmtrade.services.impl.api;
 
+import com.farmtrade.entities.OrderRequest;
 import com.farmtrade.entities.PriceUpdateHistory;
 import com.farmtrade.entities.User;
 import com.farmtrade.repositories.PriceUpdateHistoryRepository;
 import com.farmtrade.services.api.PriceUpdateHistoryService;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Order;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class PriceUpdateHistoryServiceImpl implements PriceUpdateHistoryService {
@@ -36,5 +36,10 @@ public class PriceUpdateHistoryServiceImpl implements PriceUpdateHistoryService 
     @Override
     public void delete(PriceUpdateHistory priceUpdateHistory) {
         priceUpdateHistoryRepository.delete(priceUpdateHistory);
+    }
+
+    @Override
+    public Set<PriceUpdateHistory> findAllLastUpdatesByUserId(Long id) {
+        return priceUpdateHistoryRepository.findAllLastUpdatesByUserId(id);
     }
 }

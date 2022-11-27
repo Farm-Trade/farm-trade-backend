@@ -1,5 +1,6 @@
 package com.farmtrade.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 import net.minidev.json.annotate.JsonIgnore;
 import org.hibernate.annotations.CreationTimestamp;
@@ -12,11 +13,12 @@ import java.util.Set;
 
 @Entity
 @Table(name = "price_update_history")
-@Data
+@Getter
+@Setter
+@ToString
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
 public class PriceUpdateHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,7 +32,7 @@ public class PriceUpdateHistory {
     private User updater;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "orderRequest", updatable = false)
-    @JsonIgnore
+    @JsonBackReference
     private OrderRequest orderRequest;
     @CreationTimestamp
     private Timestamp createdAt;

@@ -20,4 +20,6 @@ public interface OrderRequestService extends IBaseCrudService<OrderRequest, Long
     void publish(Long id);
 
     Page<OrderRequest> findAllOrderRequestMatchToCurrentUser(Pageable pageable);
+
+    Page<OrderRequest> findAllOrderRequestRatedByUser(Pageable pageable);
 }
