@@ -52,7 +52,7 @@ public class ProductNameServiceImpl extends BaseCrudService<ProductName, Long, P
     public ProductName updateRequestPermission(Long id, Role role) throws ApiValidationException {
         ProductName productName = findOne(id);
         if (!productName.isApproved()) {
-            throw new ApiValidationException("ProductName is not approved, createRequestPermission cannot be updated");
+            throw new ApiValidationException("Назва продукту не підтверджена");
         }
 
         Role.isCommercialRole(role, true);

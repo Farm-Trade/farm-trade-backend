@@ -13,7 +13,7 @@ public enum Role implements GrantedAuthority {
         boolean isNotCommercialRole = role.equals(ADMIN);
 
         if (isNotCommercialRole && throwable) {
-            throw new ApiValidationException("ADMIN role is not one of commercial roles");
+            throw new ApiValidationException("ADMIN це не одна із комерійних ролей");
         }
         return !isNotCommercialRole;
 

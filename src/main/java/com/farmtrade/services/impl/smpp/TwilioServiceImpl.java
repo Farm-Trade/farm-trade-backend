@@ -23,7 +23,7 @@ public class TwilioServiceImpl implements TwilioService {
         Twilio.init(twilioSid, authToken);
         Message.creator(new PhoneNumber(user.getPhone()),
                 new PhoneNumber(twilioNumber),
-                String.format("%s, please enter your verification code: %s",
+                String.format("%s, будьласка введіль номер верефікації: %s",
                         user.getFullName(), activationCode)).create();
 
     }

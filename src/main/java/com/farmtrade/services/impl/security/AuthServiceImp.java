@@ -25,7 +25,7 @@ public class AuthServiceImp implements AuthService {
         }
         String phone = authentication.getName();
         return userRepository.findByPhone(phone)
-                .orElseThrow(() -> new UsernameNotFoundException("User does not exist for the phone: " + phone));
+                .orElseThrow(() -> new UsernameNotFoundException("Користувача з таким телефоном не інсує: " + phone));
     }
 
 

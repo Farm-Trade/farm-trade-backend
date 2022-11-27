@@ -20,7 +20,7 @@ public class SearchCriteria {
         if (type.equals(FilterType.BETWEEN) && value != null && value.getClass().getComponentType() == List.class) {
             String typeName = value.getClass().getTypeName();
             throw new UnsupportedDataTypeException(
-                    "Only value with List type is allowed in combine with `BETWEEN` filer, but now it is " + typeName
+                    "Тільки значеня типу список дозволене в комбінувнні з оператором `BETWEEN`, а у вас " + typeName
             );
         }
         return new SearchCriteria(key, type, value);

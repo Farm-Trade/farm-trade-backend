@@ -43,7 +43,7 @@ public class FileStorageServiceImpl implements FileStorageService {
             Files.createDirectories(this.fileStorageLocation);
             Files.createDirectories(imageStorageLocation);
         } catch (Exception ex) {
-            throw new FileStorageException("Could not create the directory where the uploaded files will be stored.", ex);
+            throw new FileStorageException("Деректорія для файлу не може бути створенена", ex);
         }
     }
 
@@ -54,7 +54,7 @@ public class FileStorageServiceImpl implements FileStorageService {
         Set<String> types = fileStorageProperties.getImageTypes();
         String imageType = types.stream().filter(type -> imgName.endsWith("." + type))
                 .findFirst().orElseThrow(() -> new FileStorageException(
-                        "Image has unsupported type, only following types allowed " + types
+                        "Фото має тип який не підтримується, підтримуються тільки наступні типи " + types
                 ));
 
         String imagePath = fileStorageProperties.getImageDir() + newImageName + "." + imageType;
@@ -67,7 +67,7 @@ public class FileStorageServiceImpl implements FileStorageService {
         try {
             Files.deleteIfExists(targetLocation);
         } catch (IOException ex) {
-            throw new FileStorageException("Could not remove file. Please try again!", ex);
+            throw new FileStorageException("Невдалось видалити файл спробуйте ще раз!", ex);
         }
     }
 
@@ -80,7 +80,7 @@ public class FileStorageServiceImpl implements FileStorageService {
         try {
             contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
         } catch (IOException ex) {
-            logger.info("Could not determine file type.");
+            logger.info("Невдалось визначити тип файлу.");
         }
 
         if (contentType == null) {
@@ -100,7 +100,7 @@ public class FileStorageServiceImpl implements FileStorageService {
 
             return newFileName;
         } catch (IOException ex) {
-            throw new FileStorageException("Could not store file. Please try again!", ex);
+            throw new FileStorageException("Не вдалось зберегти файл. Спробуйте ще раз!", ex);
         }
     }
 
@@ -111,10 +111,10 @@ public class FileStorageServiceImpl implements FileStorageService {
             if (resource.exists()) {
                 return resource;
             } else {
-                throw new FileNotFoundException("File not found " + fileName);
+                throw new FileNotFoundException("Файл не знайдено " + fileName);
             }
         } catch (MalformedURLException ex) {
-            throw new FileNotFoundException("File not found " + fileName, ex);
+            throw new FileNotFoundException("Файл не знайдено " + fileName, ex);
         }
     }
 }

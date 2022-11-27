@@ -20,7 +20,7 @@ public class JwtUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String phone) throws UsernameNotFoundException {
         User user = userRepository.findByPhone(phone)
-                .orElseThrow(() -> new UsernameNotFoundException("User does not exist for the phone: " + phone));
+                .orElseThrow(() -> new UsernameNotFoundException("Користувача з цим номером телефону немає: " + phone));
 
         JwtUser jwtUser = JwtUserFactory.create(user);
 
