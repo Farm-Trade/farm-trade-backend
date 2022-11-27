@@ -8,6 +8,9 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.CrudRepository;
 
 import java.awt.print.Pageable;
+import java.math.BigDecimal;
+import java.util.List;
 
 public interface ProductRepository extends BaseJpaAndSpecificationRepository<Product, Long> {
+    List<Product> findAllByOwnerIdAndProductNameIdAndSizeGreaterThanEqual(Long userId, Long productNameId, BigDecimal size);
 }

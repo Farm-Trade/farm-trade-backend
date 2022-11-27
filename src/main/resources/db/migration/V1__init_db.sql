@@ -3,7 +3,7 @@ create sequence hibernate_sequence start 1 increment 1;
 
 drop table if exists product_names cascade;
 create table product_names (
-    id  bigserial not null,
+    id int8 generated always as identity,
     approved boolean not null,
     create_request_permission int4,
     name varchar(255),
@@ -16,7 +16,7 @@ alter table if exists product_names
 
 drop table if exists products cascade;
 create table products (
-    id  bigserial not null,
+    id  int8 generated always as identity,
     img varchar(255),
     quantity numeric(19, 2) check (quantity>=1),
     reserved_quantity numeric(19, 2) not null,
@@ -31,7 +31,7 @@ alter table if exists products
 
 drop table if exists users cascade;
 create table users (
-    id int8 not null,
+    id int8 generated always as identity,
     activation_code varchar(255),
     created_at timestamp,
     email varchar(255),

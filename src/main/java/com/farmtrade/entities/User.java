@@ -15,16 +15,16 @@ import java.sql.Timestamp;
 import java.util.Set;
 
 
-@Entity(name = "users")
+@Entity
+@Table(name = "users")
 @Builder
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String fullName;
     @CreationTimestamp
@@ -45,6 +45,4 @@ public class User {
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonBackReference
     private Set<Product> products;
-
-
 }

@@ -16,16 +16,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Service
 public class ProductServiceImp extends BaseCrudService<Product, Long, UpdateProductDto> implements ProductService {
     private final ProductNameServiceImpl productNameService;
     private final FileStorageService fileStorageService;
-
+    private final ProductRepository nativeRepository;
     public ProductServiceImp(ProductRepository productRepository, ProductNameServiceImpl productNameService, FileStorageService fileStorageService) {
         super(productRepository);
         this.productNameService = productNameService;
         this.fileStorageService = fileStorageService;
+        this.nativeRepository = productRepository;
     }
 
     @Override
@@ -60,6 +62,10 @@ public class ProductServiceImp extends BaseCrudService<Product, Long, UpdateProd
     }
 
     @Override
+    public Product save(Product product) {
+        return repository.save(product);
+    }
+    @Override
     public Product updateImage(Long id, MultipartFile img) {
         Product product = findOne(id);
 
@@ -80,6 +86,9 @@ public class ProductServiceImp extends BaseCrudService<Product, Long, UpdateProd
         super.delete(id);
     }
 
+    public List<Product> allProductsByUserAndProductNameAndSizeFrom(Long userId, Long productNameId, BigDecimal size) {
+        return nativeRepository.findAllByOwnerIdAndProductNameIdAndSizeGreaterThanEqual(userId, productNameId, size);
+    }
     private void deleteFileById(Long id) {
         String fileName = findOne(id).getImg();
         fileStorageService.removeFile(fileName);
