@@ -4,10 +4,7 @@ import com.farmtrade.entities.enums.Role;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
@@ -18,7 +15,9 @@ import java.util.Set;
 @Entity
 @Table(name = "users")
 @Builder
-@Data
+@Getter
+@Setter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
@@ -41,7 +40,9 @@ public class User {
     private Role role;
     @JsonIgnore
     private String activationCode;
-
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "business_details_id", referencedColumnName = "id")
+    private BusinessDetails businessDetails;
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonBackReference
     private Set<Product> products;

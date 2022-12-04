@@ -1,24 +1,30 @@
 package com.farmtrade.services.impl.api;
 
-import com.farmtrade.dto.*;
+import com.farmtrade.dto.auth.ActivationCodeDto;
+import com.farmtrade.dto.auth.AuthenticationDto;
+import com.farmtrade.dto.auth.TokenDto;
+import com.farmtrade.dto.businessdetails.UpdateBusinessDetailsDto;
 import com.farmtrade.dto.recovering.ForgotPasswordDto;
 import com.farmtrade.dto.recovering.ResetPasswordDto;
+import com.farmtrade.dto.user.UserCreateDto;
+import com.farmtrade.dto.user.UserSettingsUpdateDto;
+import com.farmtrade.dto.user.UserUpdateDto;
+import com.farmtrade.entities.BusinessDetails;
 import com.farmtrade.entities.User;
+import com.farmtrade.entities.enums.PaymentType;
 import com.farmtrade.entities.enums.Role;
-import com.farmtrade.exceptions.ApiValidationException;
-import com.farmtrade.exceptions.BadRequestException;
-import com.farmtrade.exceptions.EntityNotFoundException;
-import com.farmtrade.exceptions.UserNotActiveException;
+import com.farmtrade.exceptions.*;
+import com.farmtrade.repositories.BusinessDetailsRepository;
 import com.farmtrade.repositories.UserRepository;
 import com.farmtrade.security.jwt.JwtTokenProvider;
 import com.farmtrade.services.api.UserService;
+import com.farmtrade.services.security.AuthService;
 import com.farmtrade.services.smpp.TwilioService;
 import com.farmtrade.utils.RandomUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
@@ -36,18 +42,28 @@ public class UserServiceImpl implements UserService {
     final private UserRepository userRepository;
     final private TwilioService twilioService;
     final private BCryptPasswordEncoder bCryptPasswordEncoder;
-    private final AuthenticationManager authenticationManager;
+    private final AuthService authService;
     private final JwtTokenProvider jwtTokenProvider;
-    @Value("${user.sendActivation}")
-    private boolean sendActivation;
+    private final BusinessDetailsRepository businessDetailsRepository;
+    private final boolean sendActivation;
 
-    public UserServiceImpl(JwtTokenProvider jwtTokenProvider, AuthenticationManager authenticationManager, UserRepository userRepository, TwilioService twilioService, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public UserServiceImpl(
+            JwtTokenProvider jwtTokenProvider,
+            UserRepository userRepository,
+            TwilioService twilioService,
+            BCryptPasswordEncoder bCryptPasswordEncoder,
+            AuthService authService,
+            BusinessDetailsRepository businessDetailsRepository,
+            @Value("${user.sendActivation}")
+            boolean sendActivation
+    ) {
         this.userRepository = userRepository;
         this.twilioService = twilioService;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-        this.authenticationManager = authenticationManager;
         this.jwtTokenProvider = jwtTokenProvider;
-
+        this.authService = authService;
+        this.businessDetailsRepository = businessDetailsRepository;
+        this.sendActivation = sendActivation;
     }
 
     @Override
@@ -83,6 +99,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
+    @Transactional
     public User createUser(UserCreateDto userCreateDto) {
         User user = User.builder()
                 .fullName(userCreateDto.getFullName())
@@ -92,7 +109,10 @@ public class UserServiceImpl implements UserService {
                 .isActive(true)
                 .role(userCreateDto.getRole())
                 .build();
-
+        if (user.getRole().equals(Role.FARMER)) {
+            BusinessDetails businessDetails = BusinessDetails.builder().paymentType(PaymentType.CARD).build();
+            user.setBusinessDetails(businessDetailsRepository.save(businessDetails));
+        }
         return userRepository.save(user);
     }
 
@@ -115,6 +135,10 @@ public class UserServiceImpl implements UserService {
             sendActivationCode(user);
             return user;
         }
+        if (user.getRole().equals(Role.FARMER)) {
+            BusinessDetails businessDetails = BusinessDetails.builder().paymentType(PaymentType.CARD).build();
+            user.setBusinessDetails(businessDetailsRepository.save(businessDetails));
+        }
         user.setActive(true);
         return userRepository.save(user);
     }
@@ -130,18 +154,20 @@ public class UserServiceImpl implements UserService {
     @Override
     public TokenDto login(AuthenticationDto authenticationDto) throws UsernameNotFoundException{
         try{
-            String phone = authenticationDto.getPhone();
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(phone, authenticationDto.getPassword()));
+            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+                    new UsernamePasswordAuthenticationToken(
+                            authenticationDto.getPhone(),
+                            authenticationDto.getPassword()
+                    );
 
-            User user = getUserByPhone(phone);
-            List<Role> list = new ArrayList<>();
-            list.add(user.getRole())  ;
-            String token = jwtTokenProvider.createToken(user, list);
-            return new TokenDto(token);
-        }catch (AuthenticationException e){
+            authService.authenticate(usernamePasswordAuthenticationToken);
+        } catch (AuthenticationException e){
             throw new BadCredentialsException("Невірний телефон або пароль");
         }
+        User user = userRepository.findByPhone(authenticationDto.getPhone()).orElseThrow(
+                () -> new UsernameNotFoundException("Користувача з таким телефоном не інсує: " + authenticationDto.getPhone())
+        );
+        return buildTokenFromUser(user);
     }
 
     @Override
@@ -178,6 +204,48 @@ public class UserServiceImpl implements UserService {
         user.setPassword(bCryptPasswordEncoder.encode(resetPasswordDto.getPassword()));
 
         return userRepository.save(user);
+    }
+
+    @Override
+    public TokenDto userSettingsUpdate(UserSettingsUpdateDto userSettingsUpdateDto) {
+        User user = authService.getUserFromContext();
+        user.setFullName(userSettingsUpdateDto.getFullName());
+        user.setEmail(userSettingsUpdateDto.getEmail());
+        if (
+                userSettingsUpdateDto.getPassword() != null &&
+                    !bCryptPasswordEncoder.matches(userSettingsUpdateDto.getPassword(), user.getPassword())
+        ) {
+            user.setPassword(bCryptPasswordEncoder.encode(userSettingsUpdateDto.getPassword()));
+        }
+        return buildTokenFromUser(authService.getUserFromContext());
+    }
+
+    @Override
+    public BusinessDetails findUserBusinessDetails() {
+        User user = authService.getUserFromContext();
+        if (!user.getRole().equals(Role.FARMER)) {
+            throw new ForbiddenException("Деталі підприємства доступні тільки якщо ви фермер");
+        }
+        return user.getBusinessDetails();
+    }
+
+    @Override
+    public BusinessDetails updateBusinessDetails(UpdateBusinessDetailsDto updateBusinessDetailsDto) {
+        User user = authService.getUserFromContext();
+        if (!user.getRole().equals(Role.FARMER)) {
+            throw new ForbiddenException("Деталі підприємства доступні тільки якщо ви фермер");
+        }
+        BusinessDetails businessDetails = user.getBusinessDetails();
+        BeanUtils.copyProperties(updateBusinessDetailsDto, businessDetails);
+
+        return businessDetailsRepository.save(businessDetails);
+    }
+
+    private TokenDto buildTokenFromUser(User user) {
+        List<Role> list = new ArrayList<>();
+        list.add(user.getRole())  ;
+        String token = jwtTokenProvider.createToken(user, list);
+        return new TokenDto(token);
     }
 
     private void sendActivationCode(User user) {
