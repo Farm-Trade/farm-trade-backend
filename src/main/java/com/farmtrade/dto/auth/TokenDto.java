@@ -1,4 +1,4 @@
-package com.farmtrade.dto;
+package com.farmtrade.dto.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,15 +1,14 @@
-package com.farmtrade.dto;
+package com.farmtrade.dto.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ImageDto {
-    private MultipartFile img;
+public class ActivationCodeDto {
+    private String activationCode;
 }

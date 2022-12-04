@@ -1,4 +1,5 @@
-package com.farmtrade.dto;
+package com.farmtrade.dto.user;
+
 
 import com.farmtrade.entities.enums.Role;
 import lombok.AllArgsConstructor;
@@ -10,9 +11,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UserUpdateDto {
+public class UserCreateDto {
     private String fullName;
     private String phone;
     private String email;
+    private String password;
     private Role role;
 }

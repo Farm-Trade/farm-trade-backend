@@ -1,0 +1,2 @@
+insert into business_details (address, name, user_id) select null, null, u.id  from (select * from users where role='FARMER') u;
+update users as u set business_details_id=(select id from business_details as bd where bd.user_id=u.id) where u.role='FARMER';

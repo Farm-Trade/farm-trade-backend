@@ -11,4 +11,6 @@ create table price_update_history (
 alter table if exists price_update_history
     add constraint fk_order_request_id foreign key (order_request) references order_requests;
 alter table if exists price_update_history
-    add constraint fk_updater_id foreign key (updater) references users
+    add constraint fk_updater_id foreign key (updater) references users;
+alter table if exists price_update_history
+    add constraint fk_product_id foreign key (product) references products;
