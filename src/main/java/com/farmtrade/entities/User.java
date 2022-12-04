@@ -42,7 +42,6 @@ public class User {
     private String activationCode;
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "business_details_id", referencedColumnName = "id")
-    @JsonBackReference
     private BusinessDetails businessDetails;
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonBackReference
