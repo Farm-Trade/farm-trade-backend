@@ -161,11 +161,13 @@ public class UserServiceImpl implements UserService {
                     );
 
             authService.authenticate(usernamePasswordAuthenticationToken);
-
-            return buildTokenFromCurrentUser();
-        }catch (AuthenticationException e){
+        } catch (AuthenticationException e){
             throw new BadCredentialsException("Невірний телефон або пароль");
         }
+        User user = userRepository.findByPhone(authenticationDto.getPhone()).orElseThrow(
+                () -> new UsernameNotFoundException("Користувача з таким телефоном не інсує: " + authenticationDto.getPhone())
+        );
+        return buildTokenFromUser(user);
     }
 
     @Override
@@ -215,7 +217,7 @@ public class UserServiceImpl implements UserService {
         ) {
             user.setPassword(bCryptPasswordEncoder.encode(userSettingsUpdateDto.getPassword()));
         }
-        return buildTokenFromCurrentUser();
+        return buildTokenFromUser(authService.getUserFromContext());
     }
 
     @Override
@@ -239,8 +241,7 @@ public class UserServiceImpl implements UserService {
         return businessDetailsRepository.save(businessDetails);
     }
 
-    private TokenDto buildTokenFromCurrentUser() {
-        User user = authService.getUserFromContext();
+    private TokenDto buildTokenFromUser(User user) {
         List<Role> list = new ArrayList<>();
         list.add(user.getRole())  ;
         String token = jwtTokenProvider.createToken(user, list);
