@@ -1,4 +1,4 @@
-package com.farmtrade.dto;
+package com.farmtrade.dto.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ActivationCodeDto {
-    private String activationCode;
+public class AuthenticationDto {
+    private String phone;
+    private String password;
 }

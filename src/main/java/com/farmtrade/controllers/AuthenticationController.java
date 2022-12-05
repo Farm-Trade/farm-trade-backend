@@ -1,10 +1,9 @@
 package com.farmtrade.controllers;
 
-import com.farmtrade.dto.AuthenticationDto;
-import com.farmtrade.dto.TokenDto;
+import com.farmtrade.dto.auth.AuthenticationDto;
+import com.farmtrade.dto.auth.TokenDto;
 import com.farmtrade.dto.recovering.ForgotPasswordDto;
 import com.farmtrade.dto.recovering.ResetPasswordDto;
-import com.farmtrade.entities.User;
 import com.farmtrade.exceptions.BadRequestException;
 import com.farmtrade.exceptions.EntityNotFoundException;
 import com.farmtrade.exceptions.UserNotActiveException;

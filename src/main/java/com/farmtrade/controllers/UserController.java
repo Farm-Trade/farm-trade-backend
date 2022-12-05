@@ -1,8 +1,12 @@
 package com.farmtrade.controllers;
 
-import com.farmtrade.dto.ActivationCodeDto;
-import com.farmtrade.dto.UserCreateDto;
-import com.farmtrade.dto.UserUpdateDto;
+import com.farmtrade.dto.auth.ActivationCodeDto;
+import com.farmtrade.dto.auth.TokenDto;
+import com.farmtrade.dto.businessdetails.UpdateBusinessDetailsDto;
+import com.farmtrade.dto.user.UserCreateDto;
+import com.farmtrade.dto.user.UserSettingsUpdateDto;
+import com.farmtrade.dto.user.UserUpdateDto;
+import com.farmtrade.entities.BusinessDetails;
 import com.farmtrade.entities.User;
 import com.farmtrade.exceptions.EntityNotFoundException;
 import com.farmtrade.services.api.UserService;
@@ -38,6 +42,19 @@ public class UserController {
         return userService.findPage(pageable);
     }
 
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/business-details")
+    @Operation(summary = "Get business details", security = @SecurityRequirement(name = SECURITY_SCHEME_NAME))
+    public BusinessDetails findUserBusinessDetails() {
+        return userService.findUserBusinessDetails();
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @PutMapping("/business-details")
+    @Operation(summary = "Update business details", security = @SecurityRequirement(name = SECURITY_SCHEME_NAME))
+    public BusinessDetails findUserBusinessDetails(@RequestBody UpdateBusinessDetailsDto updateBusinessDetailsDto) {
+        return userService.updateBusinessDetails(updateBusinessDetailsDto);
+    }
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{id}")
@@ -46,6 +63,11 @@ public class UserController {
         return userService.getUser(id);
     }
 
+    @ResponseStatus(HttpStatus.OK)
+    @PutMapping("/update-user-settings")
+    public TokenDto updatePassword(@RequestBody UserSettingsUpdateDto userSettingsUpdateDto) {
+        return userService.userSettingsUpdate(userSettingsUpdateDto);
+    }
 
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/{id}")

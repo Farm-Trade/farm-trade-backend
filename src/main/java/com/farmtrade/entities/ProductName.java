@@ -11,7 +11,9 @@ import java.util.Set;
 
 @Entity
 @Table(name = "product_names")
-@Data
+@Getter
+@Setter
+@ToString
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

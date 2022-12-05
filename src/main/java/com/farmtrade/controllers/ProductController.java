@@ -1,6 +1,6 @@
 package com.farmtrade.controllers;
 
-import com.farmtrade.dto.ImageDto;
+import com.farmtrade.dto.product.ImageDto;
 import com.farmtrade.dto.product.CreateProductDto;
 import com.farmtrade.dto.product.UpdateProductDto;
 import com.farmtrade.entities.Product;
