@@ -5,6 +5,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -20,7 +21,14 @@ public class Conversation implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "conversation_members",
+            joinColumns = @JoinColumn(name = "conversation_id"),
+            inverseJoinColumns = @JoinColumn(name = "member_id")
+    )
+    private Set<User> members = new HashSet<>();
     @OneToMany(mappedBy = "conversation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonBackReference
-    private Set<Message> messages;
+    private Set<Message> messages = new HashSet<>();
 }
