@@ -153,7 +153,9 @@ public class UserServiceImpl implements UserService {
             throw new UserNotActiveException();
         }
 
-        sendActivationCode(user);
+        if (sendActivation) {
+            sendActivationCode(user);
+        }
     }
 
     @Override
