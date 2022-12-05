@@ -1,3 +1,9 @@
+-- V11
+alter table messages drop constraint fk_from_user_id;
+alter table messages drop constraint fk_conversation_id;
+drop table messages;
+-- V10
+drop table conversations;
 -- V8
 alter table business_details drop constraint fk_user_id;
 alter table users drop constraint fk_business_details_id;
