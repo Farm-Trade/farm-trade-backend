@@ -219,6 +219,7 @@ public class UserServiceImpl implements UserService {
         ) {
             user.setPassword(bCryptPasswordEncoder.encode(userSettingsUpdateDto.getPassword()));
         }
+        userRepository.save(user);
         return buildTokenFromUser(authService.getUserFromContext());
     }
 
