@@ -2,7 +2,6 @@ package com.farmtrade.services.api;
 
 import com.farmtrade.entities.OrderRequest;
 import com.farmtrade.entities.PriceUpdateHistory;
-import com.farmtrade.entities.User;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,4 +14,6 @@ public interface PriceUpdateHistoryService {
     Set<PriceUpdateHistory> findAllLastUpdatesByUserId(Long id);
 
     List<PriceUpdateHistory> getAllByUserIdAndOrderRequestId(Long userId, Long orderRequestId);
+
+    void deleteAllExceptLastThreeRatesByOrderRequestId(OrderRequest id);
 }

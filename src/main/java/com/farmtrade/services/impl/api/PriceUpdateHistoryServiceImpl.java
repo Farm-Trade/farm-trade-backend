@@ -2,21 +2,24 @@ package com.farmtrade.services.impl.api;
 
 import com.farmtrade.entities.OrderRequest;
 import com.farmtrade.entities.PriceUpdateHistory;
-import com.farmtrade.entities.User;
+import com.farmtrade.entities.Product;
 import com.farmtrade.repositories.PriceUpdateHistoryRepository;
 import com.farmtrade.services.api.PriceUpdateHistoryService;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Order;
+import com.farmtrade.services.api.ProductService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class PriceUpdateHistoryServiceImpl implements PriceUpdateHistoryService {
     private final PriceUpdateHistoryRepository priceUpdateHistoryRepository;
+    private final ProductService productService;
 
-    public PriceUpdateHistoryServiceImpl(PriceUpdateHistoryRepository priceUpdateHistoryRepository) {
+    public PriceUpdateHistoryServiceImpl(PriceUpdateHistoryRepository priceUpdateHistoryRepository, ProductService productService) {
         this.priceUpdateHistoryRepository = priceUpdateHistoryRepository;
+        this.productService = productService;
     }
 
     @Override
@@ -42,5 +45,21 @@ public class PriceUpdateHistoryServiceImpl implements PriceUpdateHistoryService 
     @Override
     public List<PriceUpdateHistory> getAllByUserIdAndOrderRequestId(Long userId, Long orderRequestId) {
         return priceUpdateHistoryRepository.findAllByOrderRequestIdAndUpdaterId(userId, orderRequestId);
+    }
+
+    @Override
+    public void deleteAllExceptLastThreeRatesByOrderRequestId(OrderRequest orderRequest) {
+        Long id = orderRequest.getId();
+        Set<Long> top3ProductIds = priceUpdateHistoryRepository.findTop3ByOrderRequestIdOrderByCreatedAt(id).stream()
+                .map(priceUpdateHistory -> priceUpdateHistory.getProduct().getId())
+                .collect(Collectors.toSet());
+        orderRequest.getPriceUpdateHistory().forEach(priceUpdateHistory -> {
+            if (!top3ProductIds.contains(priceUpdateHistory.getProduct().getId())) {
+                Product product = priceUpdateHistory.getProduct();
+                product.setReservedQuantity(product.getReservedQuantity().subtract(orderRequest.getQuantity()));
+                productService.save(product);
+            }
+        });
+        priceUpdateHistoryRepository.deleteAllByOrderRequestExceptTop3(id);
     }
 }

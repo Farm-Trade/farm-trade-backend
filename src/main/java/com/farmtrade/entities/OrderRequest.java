@@ -44,7 +44,6 @@ public class OrderRequest implements Serializable {
     @Future
     @DateTimeFormat(pattern = "mm/dd/yyyy HH:MM")
     private LocalDateTime loadingDate;
-    @Future
     @DateTimeFormat(pattern = "mm/dd/yyyy HH:MM")
     private LocalDateTime auctionEndDate;
     @ManyToOne(fetch = FetchType.EAGER)

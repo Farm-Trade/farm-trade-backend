@@ -4,7 +4,6 @@ spring:
       enabled: false
     jwt:
       token:
-
         secret : ${JWT_SECRET:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9}
         expired : 3600000
 
@@ -41,6 +40,10 @@ twilio:
 
 user:
   sendActivation: ${SEND_ACTIVATION:true}
+
+orderRequest:
+  complete:
+    interval: 60000
 
 file:
   upload-dir: uploads/

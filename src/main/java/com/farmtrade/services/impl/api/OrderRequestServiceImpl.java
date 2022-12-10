@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -202,6 +203,19 @@ public class OrderRequestServiceImpl extends BaseCrudService<OrderRequest, Long,
                 currentUser.getId()
         );
         return orderRequestRepository.findAllByPriceUpdateHistoryIn(pageable, priceUpdateHistories);
+    }
+
+    @Override
+    @Transactional
+    public void completeAllBasedOnEndAuctionDate() {
+        List<OrderRequest> orderRequests = orderRequestRepository.findAllByStatusNotAndAuctionEndDateIsLessThanEqual(
+                OrderRequestStatus.COMPLETED,
+                LocalDateTime.now()
+        );
+        orderRequests.forEach(orderRequest -> {
+            priceUpdateHistoryService.deleteAllExceptLastThreeRatesByOrderRequestId(orderRequest);
+            orderRequestRepository.completeById(orderRequest.getId());
+        });
     }
 
     private Product getProductMatchToOrderRequest(OrderRequest orderRequest) throws BadRequestException {

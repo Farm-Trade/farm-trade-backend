@@ -22,4 +22,6 @@ public interface OrderRequestService extends IBaseCrudService<OrderRequest, Long
     Page<OrderRequest> findAllOrderRequestMatchToCurrentUser(Pageable pageable);
 
     Page<OrderRequest> findAllOrderRequestRatedByUser(Pageable pageable);
+
+    void completeAllBasedOnEndAuctionDate();
 }
