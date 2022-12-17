@@ -249,7 +249,7 @@ public class OrderRequestServiceImpl extends BaseCrudService<OrderRequest, Long,
         orderRequest.getPriceUpdateHistory().clear();
         orderRequest.getPriceUpdateHistory().add(priceUpdateHistory);
 
-        orderRequestRepository.save(orderRequest);
+        priceUpdateHistoryService.deleteAllExcept(orderRequest.getId(), priceUpdateHistory.getId());
         if (sendActivation) {
             twilioService.sendWinnerMessage(orderRequest, priceUpdateHistory.getUpdater());
         }

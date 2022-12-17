@@ -29,4 +29,6 @@ public interface PriceUpdateHistoryRepository extends JpaRepository<PriceUpdateH
     @Modifying
     @Transactional
     void deleteAllByOrderRequestExceptTop3(@Param("id") Long Id);
+
+    void deleteAllByOrderRequestIdAndIdNot(Long orderRequestId, Long exceptId);
 }

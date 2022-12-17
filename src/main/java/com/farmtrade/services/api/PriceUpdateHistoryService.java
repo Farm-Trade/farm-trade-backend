@@ -16,4 +16,6 @@ public interface PriceUpdateHistoryService {
     List<PriceUpdateHistory> getAllByUserIdAndOrderRequestId(Long userId, Long orderRequestId);
 
     void deleteAllExceptLastThreeRatesByOrderRequestId(OrderRequest id);
+
+    void deleteAllExcept(Long orderRequestId, Long exceptId);
 }

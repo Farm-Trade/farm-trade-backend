@@ -62,4 +62,9 @@ public class PriceUpdateHistoryServiceImpl implements PriceUpdateHistoryService 
         });
         priceUpdateHistoryRepository.deleteAllByOrderRequestExceptTop3(id);
     }
+
+    @Override
+    public void deleteAllExcept(Long orderRequestId, Long exceptId) {
+        priceUpdateHistoryRepository.deleteAllByOrderRequestIdAndIdNot(orderRequestId, exceptId);
+    }
 }
