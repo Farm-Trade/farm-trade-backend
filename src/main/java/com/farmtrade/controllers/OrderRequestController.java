@@ -75,11 +75,18 @@ public class OrderRequestController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/own-rated")
-    @Operation(summary = "Get all order request related to user's prodcut")
+    @Operation(summary = "Get all order request related to user's products")
     public Page<OrderRequest> findAllOrderRequestRatedByUser(
             @ParameterObject @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable
     ) {
         return orderRequestService.findAllOrderRequestRatedByUser(pageable);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @PostMapping("/{id}/select-winner/{winner_id}")
+    @Operation(summary = "Select winner from 3 last users")
+    public void selectWinner(@PathVariable Long id, @PathVariable Long winner_id) {
+        orderRequestService.selectWinner(id, winner_id);
     }
 
     @ResponseStatus(HttpStatus.OK)

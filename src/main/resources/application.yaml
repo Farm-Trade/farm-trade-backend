@@ -44,6 +44,7 @@ user:
 orderRequest:
   complete:
     interval: 60000
+    disable: ${ORDER_REQUEST_COMPLETING_DISABLE:false}
 
 file:
   upload-dir: uploads/

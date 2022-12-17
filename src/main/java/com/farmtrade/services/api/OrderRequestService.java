@@ -24,4 +24,6 @@ public interface OrderRequestService extends IBaseCrudService<OrderRequest, Long
     Page<OrderRequest> findAllOrderRequestRatedByUser(Pageable pageable);
 
     void completeAllBasedOnEndAuctionDate();
+
+    void selectWinner(Long id, Long winnerId);
 }

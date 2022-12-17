@@ -13,7 +13,9 @@ import com.farmtrade.services.api.PriceUpdateHistoryService;
 import com.farmtrade.services.api.ProductNameService;
 import com.farmtrade.services.api.ProductService;
 import com.farmtrade.services.security.AuthService;
+import com.farmtrade.services.smpp.TwilioService;
 import com.farmtrade.utils.BigDecimalUtil;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -34,14 +36,26 @@ public class OrderRequestServiceImpl extends BaseCrudService<OrderRequest, Long,
     private final ProductService productService;
     private final AuthService authService;
     private final OrderRequestRepository orderRequestRepository;
-
-    public OrderRequestServiceImpl(OrderRequestRepository orderRequestRepository, ProductNameService productNameService, PriceUpdateHistoryService priceUpdateHistoryService, ProductService productService, AuthService authService) {
+    private final TwilioService twilioService;
+    private final boolean sendActivation;
+    public OrderRequestServiceImpl(
+            OrderRequestRepository orderRequestRepository,
+            ProductNameService productNameService,
+            PriceUpdateHistoryService priceUpdateHistoryService,
+            ProductService productService,
+            AuthService authService,
+            TwilioService twilioService,
+            @Value("${user.sendActivation}")
+            boolean sendActivation
+    ) {
         super(orderRequestRepository);
         this.productNameService = productNameService;
         this.priceUpdateHistoryService = priceUpdateHistoryService;
         this.productService = productService;
         this.authService = authService;
         this.orderRequestRepository = orderRequestRepository;
+        this.twilioService = twilioService;
+        this.sendActivation = sendActivation;
     }
 
     @Override
@@ -216,6 +230,29 @@ public class OrderRequestServiceImpl extends BaseCrudService<OrderRequest, Long,
             priceUpdateHistoryService.deleteAllExceptLastThreeRatesByOrderRequestId(orderRequest);
             orderRequestRepository.completeById(orderRequest.getId());
         });
+    }
+
+    @Override
+    @Transactional
+    public void selectWinner(Long id, Long winnerId) {
+        OrderRequest orderRequest = findOne(id);
+        if (!orderRequest.getStatus().equals(OrderRequestStatus.COMPLETED)) {
+            throw new BadRequestException("Переможця можна вибрати тільки для завершених запитів");
+        }
+        if (!isCurrentUser(orderRequest.getOwner())) {
+            throw new ForbiddenException("Тільки власник може вибрати переможця на запиті");
+        }
+        PriceUpdateHistory priceUpdateHistory = orderRequest.getPriceUpdateHistory().stream()
+                .filter(puh -> puh.getUpdater().getId().equals(winnerId))
+                .findFirst()
+                .orElseThrow(() -> new BadRequestException("Вибраного користувача немає серед ставок до цього запиту"));
+        orderRequest.getPriceUpdateHistory().clear();
+        orderRequest.getPriceUpdateHistory().add(priceUpdateHistory);
+
+        orderRequestRepository.save(orderRequest);
+        if (sendActivation) {
+            twilioService.sendWinnerMessage(orderRequest, priceUpdateHistory.getUpdater());
+        }
     }
 
     private Product getProductMatchToOrderRequest(OrderRequest orderRequest) throws BadRequestException {

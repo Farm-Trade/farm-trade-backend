@@ -1,5 +1,6 @@
 package com.farmtrade.services.impl.smpp;
 
+import com.farmtrade.entities.OrderRequest;
 import com.farmtrade.entities.User;
 import com.farmtrade.services.smpp.TwilioService;
 import com.twilio.Twilio;
@@ -20,12 +21,28 @@ public class TwilioServiceImpl implements TwilioService {
     private String twilioNumber;
 
     public void sendVerificationMessage(User user, String activationCode){
-        Twilio.init(twilioSid, authToken);
-        Message.creator(new PhoneNumber(user.getPhone()),
-                new PhoneNumber(twilioNumber),
-                String.format("%s, будьласка введіль номер верефікації: %s",
-                        user.getFullName(), activationCode)).create();
-
+        String message = String.format(
+                "%s, будьласка введіль номер верефікації: %s",
+                user.getFullName(),
+                activationCode
+        );
+        createMessage(user.getPhone(), message);
     }
 
+    public void sendWinnerMessage(OrderRequest orderRequest, User winner){
+        String message = String.format(
+                "%s, вас вибрано як переможця в лоті з %s," +
+                        " щодо подальшої співпраці може звязатись з власником лоту %s %s",
+                winner.getFullName(),
+                orderRequest.getProductName().getName(),
+                orderRequest.getOwner().getFullName(),
+                orderRequest.getOwner().getFullName()
+        );
+        createMessage(winner.getPhone(), message);
+    }
+
+    private void createMessage(String phone, String message) {
+        Twilio.init(twilioSid, authToken);
+        Message.creator(new PhoneNumber(phone), new PhoneNumber(twilioNumber), message).create();
+    }
 }
