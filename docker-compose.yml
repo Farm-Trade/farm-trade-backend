@@ -31,7 +31,7 @@ services:
       - postgres
 
   frontend:
-    image: ghcr.io/farm-trade/farm-trade-frontend
+    image: ghcr.io/farm-trade/farm-trade-frontend-additional
     ports:
       - "3000:3000"
     depends_on:
